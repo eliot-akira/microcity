@@ -1,0 +1,14 @@
+{
+  "name": "microcity",
+  "description": "Classic city simulation based on Micropolis",
+  "scripts": {
+    "dev": "roll dev",
+    "build": "roll build",
+    "format": "roll format",
+    "serve": "roll serve"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@tangible/roller": "1.x"
+  }
+}
