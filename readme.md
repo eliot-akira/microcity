@@ -1,4 +1,4 @@
-# MicroCity
+# Microcity
 
 Classic city simulation based on Micropolis
 
@@ -16,7 +16,9 @@ Demo: [https://eliot-akira.github.io/microcity](https://eliot-akira.github.io/mi
 - Generate new city
 - Export/import city
 - Control panel with tool icons
+- Mouse and touch drag to move around the map 
 - Macintosh-style scroll bar for map
+- Overviews
 
 ## Reference
 
