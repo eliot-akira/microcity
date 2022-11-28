@@ -54,6 +54,7 @@ var onFallbackLoad = function () {
 }
 
 var tileSetError = function () {
+  console.log('tileSetError')
   // We might be running locally in Chrome, which handles the security context of file URIs differently, which makes
   // things go awry when we try to create an image from a "tainted" canvas (one we've painted on). Let's try creating
   // the tileset by URI instead
@@ -73,5 +74,11 @@ Config.debug = false
 // })
 
 var tiles = $('#tiles')[0]
-tileSet = new TileSet(tiles, onTilesLoaded, tileSetError)
+console.log('tiles', tiles)
+function createTileSet() {
+  tileSet = new TileSet(tiles, onTilesLoaded, tileSetError)
+}
+if (tiles.complete) createTileSet()
+tiles.onload = createTileSet
+
 // var snowtiles = $('#snowtiles')[1]

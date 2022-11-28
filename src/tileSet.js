@@ -23,24 +23,25 @@ function TileSet(image, callback, errorCallback) {
 
   this.isValid = false
 
-  if (!(image instanceof Image)) {
-    // Spin the event loop
-    window.setTimeout(errorCallback, 0)
-    return
-  }
+  // if (!(image instanceof Image)) {
+  //   // Spin the event loop
+  //   window.setTimeout(errorCallback, 0)
+  //   return
+  // }
 
   this._verifyImage(image, callback, errorCallback)
 }
 
 TileSet.prototype._verifyImage = function (image, callback, errorCallback) {
+
   var width = image.width
   var height = image.height
 
   // We expect tilesets to be square, and of the required width/height
   if (width !== height || width !== ACCEPTABLE_DIMENSION) {
-    // Spin the event loop
-    window.setTimeout(errorCallback, 0)
-    return
+    // // Spin the event loop
+    // window.setTimeout(errorCallback, 0)
+    // return
   }
 
   var tileWidth = (this.tileWidth = TILE_SIZE)

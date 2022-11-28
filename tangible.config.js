@@ -12,11 +12,6 @@ const config = {
       src: 'src/**/index.html',
       dest: 'docs',
     },
-    {
-      task: 'copy',
-      src: 'public',
-      dest: 'docs',
-    },
   ],
   format: 'src',
   serve: {

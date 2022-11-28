@@ -7,6 +7,10 @@
     "format": "roll format",
     "serve": "roll serve"
   },
+  "tags": [
+    "micropolis",
+    "simcity"
+  ],
   "dependencies": {},
   "devDependencies": {
     "@tangible/roller": "1.x"
