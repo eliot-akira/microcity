@@ -416,7 +416,7 @@ GameCanvas.prototype._processSprites = function (ctx, spriteList) {
           ', ' +
           sprite.y
       )
-      return
+      continue
     }
 
     // sprite values are in pixels
