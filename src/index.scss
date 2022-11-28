@@ -1,6 +1,5 @@
-
 * {
-  box-sizing: border-box;;
+  box-sizing: border-box;
 }
 
 body {
@@ -299,7 +298,7 @@ nav li {
   margin-right: 5px;
 
   color: black;
-  background-color: rgba(255, 255, 255, .5); // white;
+  background-color: rgba(255, 255, 255, 0.5); // white;
 
   // font-size: 12px;
   display: inline-block;
@@ -307,7 +306,7 @@ nav li {
 
 .miscButton {
   color: black;
-  background-color: rgba(255, 255, 255, .5);
+  background-color: rgba(255, 255, 255, 0.5);
   // font-size: 12px;
 }
 
@@ -352,7 +351,6 @@ nav li {
   background-color: limegreen;
 }
 
-
 #debug {
   position: absolute;
   top: 580px;
@@ -384,7 +382,6 @@ nav li {
   padding: 0 5px;
 }
 
-
 #infobar {
   position: absolute;
   top: 0;
@@ -408,8 +405,7 @@ nav li {
 }
 
 #RCIContainer {
-
-display: none;
+  display: none;
 
   position: absolute;
   top: 472px;
@@ -417,7 +413,6 @@ display: none;
   height: 140px;
   margin: 0px;
 }
-
 
 #loadingBanner[data-hasscript='false'] {
   display: none;
@@ -830,7 +825,6 @@ display: none;
 }
 */
 
-
 /*
 @media (max-width: 850px) {
 
@@ -861,13 +855,13 @@ display: none;
 
 @media (max-width: 650px) {
 */
-  .leftedge {
-    left: 0px;
-  }
+.leftedge {
+  left: 0px;
+}
 
-  .rightedge {
-    right: 0px;
-  }
+.rightedge {
+  right: 0px;
+}
 // }
 
 /* About/nag page styles */

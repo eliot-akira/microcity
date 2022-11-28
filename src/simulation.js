@@ -105,7 +105,6 @@ var Simulation = EventEmitter(function (gameMap, gameLevel, speed, savedGame) {
   if (savedGame) {
     this.load(savedGame)
   } else {
-
     this.budget.setFunds(1000000) // 20000
     this._census.totalPop = 1
   }

@@ -32,12 +32,10 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
   var savedGame
 
   if (!gameMap.isSavedGame) {
-
     this.gameMap = gameMap
     savedGame = null
-
   } else {
-    // Saved game - TODO: Save and restore width and height 
+    // Saved game - TODO: Save and restore width and height
     this.gameMap = new GameMap(240, 240) // 120, 100
     savedGame = gameMap
   }
@@ -314,7 +312,7 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
 
   this._notificationBar = new Notification(
     '#notifications',
-    this.gameCanvas,
+    this.gameCanvas
     // Text.messageText[Messages.WELCOME]
   )
 
@@ -338,9 +336,7 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
   // Unhide controls
   this.revealControls()
 
-
-this._notificationBar._element.toggle() // Hide welcome notification
-
+  this._notificationBar._element.toggle() // Hide welcome notification
 
   // Run the sim
   this.tick = tick.bind(this)
@@ -365,7 +361,7 @@ Game.prototype.save = function () {
   BaseTool.save(saveData)
   this.simulation.save(saveData)
 
-// console.log('Save', saveData)
+  // console.log('Save', saveData)
 
   Storage.saveGame(saveData)
 }
@@ -383,12 +379,11 @@ var nextFrame =
   window.webkitRequestAnimationFrame
 
 Game.prototype.revealControls = function () {
-
   $('.initialHidden').each(function (e) {
     $(this).removeClass('initialHidden')
   })
 
-console.log('game.revealControls')
+  console.log('game.revealControls')
 
   // this._notificationBar.news({ subject: Messages.WELCOME })
   this.rci.update({ residential: 750, commercial: 750, industrial: 750 })
@@ -400,7 +395,6 @@ var genericDialogClosure = function () {
 }
 
 Game.prototype.onDateChange = function (date) {
-
   // if (date.month === 10 && Random.getChance(10))
   //   this.gameCanvas.changeTileSet(this.snowTileSet)
   // else if (date.month === 1) this.gameCanvas.changeTileSet(this.tileSet)
@@ -550,7 +544,6 @@ Game.prototype.handleMandatoryBudget = function () {
 }
 
 Game.prototype.handleTool = function (data) {
-
   var x = data.x
   var y = data.y
 
@@ -570,19 +563,18 @@ Game.prototype.handleTool = function (data) {
   tool.modifyIfEnoughFunding(budget)
 
   switch (tool.result) {
-
     case tool.TOOLRESULT_NEEDS_BULLDOZE:
-console.log(Text.toolMessages.needsDoze)
+      console.log(Text.toolMessages.needsDoze)
       // $('#toolOutput').text(Text.toolMessages.needsDoze)
       break
 
     case tool.TOOLRESULT_NO_MONEY:
-console.log(Text.toolMessages.noMoney)
+      console.log(Text.toolMessages.noMoney)
       // $('#toolOutput').text(Text.toolMessages.noMoney)
       break
 
     default:
-      // $('#toolOutput').html('Tools')
+    // $('#toolOutput').html('Tools')
   }
 }
 
@@ -763,7 +755,6 @@ Game.prototype.calculateSpritesForPaint = function (canvas) {
 }
 
 var tick = function () {
-
   this.handleInput()
 
   if (this.dialogOpen) {

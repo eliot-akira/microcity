@@ -141,22 +141,18 @@ GameCanvas.prototype._calculateDimensions = function (force) {
   this._totalTilesInViewY = Math.ceil(canvasHeight / w)
 
   if (this._allowScrolling) {
-
     // The min/max properties denote how far we will let the canvas' origin move: the map
     // should be visible in at least half the canvas
 
     this.minX = 0 //- Math.ceil(Math.floor(canvasWidth / w) / 2)
-    this.maxX = this._map.width - 1
-      - Math.ceil(Math.floor(canvasWidth / w))
-      // Was: - Math.ceil(Math.floor(canvasWidth / w) / 2)
+    this.maxX = this._map.width - 1 - Math.ceil(Math.floor(canvasWidth / w))
+    // Was: - Math.ceil(Math.floor(canvasWidth / w) / 2)
 
     this.minY = 0 //- Math.ceil(Math.floor(canvasHeight / w) / 2)
-    this.maxY = this._map.height - 1
-      - Math.ceil(Math.floor(canvasHeight / w))
-      // Was: - Math.ceil(Math.floor(canvasHeight / w) / 2)
+    this.maxY = this._map.height - 1 - Math.ceil(Math.floor(canvasHeight / w))
+    // Was: - Math.ceil(Math.floor(canvasHeight / w) / 2)
 
     this._totalTilesInViewY = Math.ceil(canvasHeight / w)
-
   } else {
     this.minX = 0
     this.minY = 0
@@ -409,7 +405,8 @@ GameCanvas.prototype._processSprites = function (ctx, spriteList) {
         sprite.width
       )
     } catch (e) {
-      throw new Error(
+      // throw new Error
+      console.warn(
         'Failed to draw sprite ' +
           sprite.type +
           ' frame ' +
@@ -419,6 +416,7 @@ GameCanvas.prototype._processSprites = function (ctx, spriteList) {
           ', ' +
           sprite.y
       )
+      return
     }
 
     // sprite values are in pixels

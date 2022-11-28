@@ -26,7 +26,6 @@ var TERRAIN_CURVE_LEVEL = -1
 var ISLAND_RADIUS = 18
 
 var MapGenerator = function (w, h) {
-
   w = w || 240 // 120
   h = h || 240 // 100
 

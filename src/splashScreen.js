@@ -14,12 +14,11 @@ import { Storage } from './storage'
  */
 
 function SplashScreen(tileSet, snowTileSet, spriteSheet) {
-
   /**
    * Map size - TODO: Consolidate constants
    * @see gameMap.js, mapGenerator.js
    */
-  this.mapWidth = 240  // 120
+  this.mapWidth = 240 // 120
   this.mapHeight = 240 // 100
 
   this.tileSet = tileSet
@@ -27,9 +26,9 @@ function SplashScreen(tileSet, snowTileSet, spriteSheet) {
   this.spriteSheet = spriteSheet
   this.map = MapGenerator(this.mapWidth, this.mapHeight)
 
-const savedGame = Storage.canStore && Storage.getSavedGame()
+  const savedGame = Storage.canStore && Storage.getSavedGame()
 
-console.log('savedGame')
+  console.log('savedGame')
 
   // Launch a new game
   var game = new Game(
@@ -41,13 +40,11 @@ console.log('savedGame')
     'Microcity'
   )
 
-
-  setInterval(function() {
+  setInterval(function () {
     Storage.canStore && game.save()
   }, 3000)
 
-return;
-
+  return;
 
   // Set up listeners on buttons. When play is clicked, we will move on to get the player's desired
   // difficulty level and city name before launching the game properly
@@ -85,7 +82,7 @@ var handleLoad = function (e) {
 
   var savedGame = Storage.getSavedGame()
 
-console.log(savedGame)
+  console.log(savedGame)
 
   if (savedGame === null) return
 
@@ -135,7 +132,6 @@ var acquireNameAndDifficulty = function (e) {
 // This function should be called after the name/difficulty form has been submitted. The game will now be launched
 // with the map selected earlier.
 var play = function (e) {
- 
   e.preventDefault()
 
   // As usual, uninstall event listeners, and hide the UI

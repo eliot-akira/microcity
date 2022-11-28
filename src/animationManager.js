@@ -9,7 +9,6 @@ import {
 import { TileUtils } from './tileUtils'
 
 function AnimationManager(map, animationPeriod, blinkPeriod) {
-
   animationPeriod = animationPeriod || 250 // 50
   blinkPeriod = blinkPeriod || 500
 

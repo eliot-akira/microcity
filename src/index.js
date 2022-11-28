@@ -20,7 +20,6 @@ var onTilesLoaded = function () {
 }
 
 var onAllTilesLoaded = function () {
-
   // Kick things off properly
   var sprites = $('#sprites')[0]
   if (sprites.complete) {
@@ -66,12 +65,12 @@ var tileSetError = function () {
 
 // Check for debug parameter in URL
 Config.debug = false
-  // window.location.search
-  // .slice(1)
-  // .split('&')
-  // .some(function (param) {
-  //   return param.trim().toLowerCase() === 'debug=1'
-  // })
+// window.location.search
+// .slice(1)
+// .split('&')
+// .some(function (param) {
+//   return param.trim().toLowerCase() === 'debug=1'
+// })
 
 var tiles = $('#tiles')[0]
 tileSet = new TileSet(tiles, onTilesLoaded, tileSetError)

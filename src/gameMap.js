@@ -7,7 +7,6 @@ import { BNCNBIT, ZONEBIT } from './tileFlags'
 import { TILE_INVALID } from './tileValues'
 
 function GameMap(width, height, defaultValue) {
-
   if (!(this instanceof GameMap))
     return new GameMap(width, height, defaultValue)
 
@@ -28,14 +27,11 @@ function GameMap(width, height, defaultValue) {
 
   // Argument shuffling
   if (arguments.length === 0) {
-
     width = defaultWidth
     height = defaultHeight
 
     defaultValue = new Tile().getValue()
-
   } else if (arguments.length === 1) {
-
     if (typeof width === 'number') {
       // Default value
       defaultValue = width
@@ -46,7 +42,6 @@ function GameMap(width, height, defaultValue) {
 
     width = defaultWidth
     height = defaultHeight
-
   } else if (arguments.length === 2) {
     defaultValue = new Tile().getValue()
   } else if (arguments.length === 3) {
