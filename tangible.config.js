@@ -1,7 +1,7 @@
 const config = {
   build: [
     {
-      src: 'src/index.js',
+      src: 'src/index.ts',
       dest: 'docs/index.min.js'
     },
     {

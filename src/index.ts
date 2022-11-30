@@ -74,10 +74,11 @@ Config.debug = false
 // })
 
 var tiles = $('#tiles')[0]
-console.log('tiles', tiles)
+
 function createTileSet() {
   tileSet = new TileSet(tiles, onTilesLoaded, tileSetError)
 }
+
 if (tiles.complete) createTileSet()
 tiles.onload = createTileSet
 
