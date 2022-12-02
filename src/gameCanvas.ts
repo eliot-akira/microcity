@@ -288,11 +288,17 @@ class GameCanvas {
 
     if (!this.ready) throw new Error('Not ready!')
 
-    if (x >= this.canvasWidth || y >= this.canvasHeight) return null
+    const relativeWidth = this.canvasWidth*this.zoomRatio
+    const relativeHeight = this.canvasHeight*this.zoomRatio
+    if (x >= relativeWidth || y >= relativeHeight) return null
 
+    const tileX = this._originX + Math.floor(x / this._tileSet.tileWidth / this.zoomRatio)
+    const tileY = this._originY + Math.floor(y / this._tileSet.tileWidth / this.zoomRatio)
+    
+    console.log([x, y], [tileX,tileY])
     return {
-      x: this._originX + Math.floor(x / this._tileSet.tileWidth / this.zoomRatio),
-      y: this._originY + Math.floor(y / this._tileSet.tileWidth / this.zoomRatio),
+      x: tileX,
+      y: tileY,
     }
   }
 
@@ -306,7 +312,9 @@ class GameCanvas {
 
     if (!this.ready) throw new Error('Not ready!')
 
-    if (x >= this.canvasWidth || y >= this.canvasHeight) return null
+    const relativeWidth = this.canvasWidth*this.zoomRatio
+    const relativeHeight = this.canvasHeight*this.zoomRatio
+    if (x >= relativeWidth || y >= relativeHeight) return null
 
     x = this._originX + Math.floor(x / this._tileSet.tileWidth / this.zoomRatio)
     y = this._originY + Math.floor(y / this._tileSet.tileWidth / this.zoomRatio)
