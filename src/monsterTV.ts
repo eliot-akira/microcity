@@ -2,9 +2,9 @@ import { EventEmitter } from './eventEmitter'
 import { GameCanvas } from './gameCanvas'
 import { SPRITE_DYING, SPRITE_MOVED } from './messages'
 
-var TIMEOUT_SECS = 10
+const TIMEOUT_SECS = 10
 
-var MonsterTV = function (map, tileSet, spriteSheet, animationManager) {
+const MonsterTV = function (map, tileSet, spriteSheet, animationManager) {
   this.isOpen = false
   this._tracking = null
 
@@ -44,16 +44,15 @@ MonsterTV.prototype.paint = function (sprite, isPaused) {
 }
 
 var onMove = function (event) {
-  var min = this.canvas.getTileOrigin()
-  var max = this.canvas.getMaxTile()
+  const min = this.canvas.getTileOrigin()
+  const max = this.canvas.getMaxTile()
 
   if (
-    event.x < min.x ||
-    event.y < min.y ||
-    event.x >= max.x ||
-    event.y >= max.y
-  )
-    this.canvas.centreOn(event.x, event.y)
+    event.x < min.x
+    || event.y < min.y
+    || event.x >= max.x
+    || event.y >= max.y
+  ) { this.canvas.centreOn(event.x, event.y) }
 }
 
 var onDie = function (event) {

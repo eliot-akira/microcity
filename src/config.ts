@@ -2,7 +2,7 @@
 // value as well as their individual value. The debug flag is intended to switch on all
 // debug options.
 
-var Config = {
+const Config = {
   debug: false,
   gameDebug: false,
   queryDebug: false,

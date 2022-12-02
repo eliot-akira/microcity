@@ -1,16 +1,16 @@
 import * as Messages from './messages'
-import { MiscUtils } from './miscUtils'
-import { Text } from './text'
+import { MiscUtils } from './utils'
+import { Text } from './messages/text'
 
 // TODO L20N
 
-var InfoBar = function (classification, population, score, funds, date, name) {
-  var classificationSelector = MiscUtils.normaliseDOMid(classification)
-  var populationSelector = MiscUtils.normaliseDOMid(population)
-  var scoreSelector = MiscUtils.normaliseDOMid(score)
-  var fundsSelector = MiscUtils.normaliseDOMid(funds)
-  var dateSelector = MiscUtils.normaliseDOMid(date)
-  var nameSelector = MiscUtils.normaliseDOMid(name)
+const InfoBar = function (classification, population, score, funds, date, name) {
+  const classificationSelector = MiscUtils.normaliseDOMid(classification)
+  const populationSelector = MiscUtils.normaliseDOMid(population)
+  const scoreSelector = MiscUtils.normaliseDOMid(score)
+  const fundsSelector = MiscUtils.normaliseDOMid(funds)
+  const dateSelector = MiscUtils.normaliseDOMid(date)
+  const nameSelector = MiscUtils.normaliseDOMid(name)
 
   return function (dataSource, initialValues) {
     $(classificationSelector).text(initialValues.classification)
@@ -46,7 +46,10 @@ var InfoBar = function (classification, population, score, funds, date, name) {
     })
 
     dataSource.addEventListener(Messages.DATE_UPDATED, function (date) {
-      $(dateSelector).text([Text.months[date.month], date.year].join(', Year '))
+      $(dateSelector).text(
+        `Year ${date.year} ${Text.months[date.month]}`
+        // [Text.months[date.month], date.year].join(', Year '))
+      )
     })
   }
 }

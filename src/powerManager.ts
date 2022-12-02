@@ -1,29 +1,29 @@
-import { BlockMap } from './blockMap'
-import { forEachCardinalDirection } from './direction'
+import { BlockMap } from './map/blockMap'
+import { forEachCardinalDirection } from './map/direction'
 import { EventEmitter } from './eventEmitter'
-import { Position } from './position'
+import { Position } from './map/position'
 import { NOT_ENOUGH_POWER } from './messages'
 import { Random } from './random'
-import { ANIMBIT, BURNBIT, CONDBIT, POWERBIT } from './tileFlags'
-import { NUCLEAR, POWERPLANT } from './tileValues'
+import { ANIMBIT, BURNBIT, CONDBIT, POWERBIT } from './tiles/tileFlags'
+import { NUCLEAR, POWERPLANT } from './tiles/tileValues'
 
-var COAL_POWER_STRENGTH = 700
-var NUCLEAR_POWER_STRENGTH = 2000
+const COAL_POWER_STRENGTH = 700
+const NUCLEAR_POWER_STRENGTH = 2000
 
-var PowerManager = EventEmitter(function (map) {
+const PowerManager = EventEmitter(function (map) {
   this._map = map
   this._powerStack = []
   this.powerGridMap = new BlockMap(this._map.width, this._map.height, 1)
 })
 
 PowerManager.prototype.setTilePower = function (x, y) {
-  var tile = this._map.getTile(x, y)
-  var tileValue = tile.getValue()
+  const tile = this._map.getTile(x, y)
+  const tileValue = tile.getValue()
 
   if (
-    tileValue === NUCLEAR ||
-    tileValue === POWERPLANT ||
-    this.powerGridMap.worldGet(x, y) > 0
+    tileValue === NUCLEAR
+    || tileValue === POWERPLANT
+    || this.powerGridMap.worldGet(x, y) > 0
   ) {
     tile.addFlags(POWERBIT)
     return
@@ -38,7 +38,7 @@ PowerManager.prototype.clearPowerStack = function () {
 }
 
 PowerManager.prototype.testForConductive = function (pos, testDir) {
-  var movedPos = Position.move(pos, testDir)
+  const movedPos = Position.move(pos, testDir)
 
   if (this._map.isPositionInBounds(movedPos)) {
     if (this._map.getTile(movedPos.x, movedPos.y).isConductive()) {
@@ -57,11 +57,11 @@ PowerManager.prototype.doPowerScan = function (census) {
   this.powerGridMap.clear()
 
   // Power that the combined coal and nuclear power plants can deliver.
-  var maxPower =
-    census.coalPowerPop * COAL_POWER_STRENGTH +
-    census.nuclearPowerPop * NUCLEAR_POWER_STRENGTH
+  const maxPower =
+    census.coalPowerPop * COAL_POWER_STRENGTH
+    + census.nuclearPowerPop * NUCLEAR_POWER_STRENGTH
 
-  var powerConsumption = 0 // Amount of power used.
+  let powerConsumption = 0 // Amount of power used.
 
   while (this._powerStack.length > 0) {
     var pos = this._powerStack.pop()
@@ -101,22 +101,22 @@ PowerManager.prototype.coalPowerFound = function (map, x, y, simData) {
   this._powerStack.push(new Position(x, y))
 
   // Ensure animation runs
-  var dX = [-1, 2, 1, 2]
-  var dY = [-1, -1, 0, 0]
+  const dX = [-1, 2, 1, 2]
+  const dY = [-1, -1, 0, 0]
 
-  for (var i = 0; i < 4; i++) map.addTileFlags(x + dX[i], y + dY[i], ANIMBIT)
+  for (let i = 0; i < 4; i++) map.addTileFlags(x + dX[i], y + dY[i], ANIMBIT)
 }
 
-var dX = [1, 2, 1, 2]
-var dY = [-1, -1, 0, 0]
-var meltdownTable = [30000, 20000, 10000]
+const dX = [1, 2, 1, 2]
+const dY = [-1, -1, 0, 0]
+const meltdownTable = [30000, 20000, 10000]
 
 PowerManager.prototype.nuclearPowerFound = function (map, x, y, simData) {
   // TODO With the auto repair system, zone gets repaired before meltdown
   // In original Micropolis code, we bail and don't repair if melting down
   if (
-    simData.disasterManager.disastersEnabled &&
-    Random.getRandom(meltdownTable[simData.gameLevel]) === 0
+    simData.disasterManager.disastersEnabled
+    && Random.getRandom(meltdownTable[simData.gameLevel]) === 0
   ) {
     simData.disasterManager.doMeltdown(x, y)
     return
@@ -126,8 +126,7 @@ PowerManager.prototype.nuclearPowerFound = function (map, x, y, simData) {
   this._powerStack.push(new Position(x, y))
 
   // Ensure animation bits set
-  for (var i = 0; i < 4; i++)
-    map.addTileFlags(x, y, ANIMBIT | CONDBIT | POWERBIT | BURNBIT)
+  for (let i = 0; i < 4; i++) { map.addTileFlags(x, y, ANIMBIT | CONDBIT | POWERBIT | BURNBIT) }
 }
 
 PowerManager.prototype.registerHandlers = function (mapScanner, repairManager) {

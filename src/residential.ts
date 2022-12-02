@@ -1,84 +1,79 @@
 import { Config } from './config'
 import { Random } from './random'
-import { Tile } from './tile'
-import { BLBNCNBIT, ZONEBIT } from './tileFlags'
-import { TileUtils } from './tileUtils'
-import * as TileValues from './tileValues'
+import { Tile } from './tiles/tile'
+import { BLBNCNBIT, ZONEBIT } from './tiles/tileFlags'
+import { TileUtils } from './tiles/tileUtils'
+import * as TileValues from './tiles/tileValues'
 import { Traffic } from './traffic'
 import { ZoneUtils } from './zoneUtils'
 
 // Residential tiles have 'populations' of 16, 24, 32 or 40, and value from 0 to 3. The tiles are laid out in
 // increasing order of land value, cycling through each population value
-var placeResidential = function (map, x, y, population, lpValue, zonePower) {
-  var centreTile = (lpValue * 4 + population) * 9 + TileValues.RZB
+const placeResidential = function (map, x, y, population, lpValue, zonePower) {
+  const centreTile = (lpValue * 4 + population) * 9 + TileValues.RZB
   ZoneUtils.putZone(map, x, y, centreTile, zonePower)
 }
 
 // Look for housing in the adjacent 8 tiles
-var getFreeZonePopulation = function (map, x, y, tileValue) {
-  var count = 0
-  for (var xx = x - 1; xx <= x + 1; xx++) {
-    for (var yy = y - 1; yy <= y + 1; yy++) {
+const getFreeZonePopulation = function (map, x, y, tileValue) {
+  let count = 0
+  for (let xx = x - 1; xx <= x + 1; xx++) {
+    for (let yy = y - 1; yy <= y + 1; yy++) {
       if (xx === x && yy === y) continue
       tileValue = map.getTileValue(xx, yy)
-      if (tileValue >= TileValues.LHTHR && tileValue <= TileValues.HHTHR)
-        count += 1
+      if (tileValue >= TileValues.LHTHR && tileValue <= TileValues.HHTHR) { count += 1 }
     }
   }
 
   return count
 }
 
-var getZonePopulation = function (map, x, y, tileValue) {
+const getZonePopulation = function (map, x, y, tileValue) {
   if (tileValue instanceof Tile) tileValue = tile.getValue()
 
-  if (tileValue === TileValues.FREEZ)
-    return getFreeZonePopulation(map, x, y, tileValue)
+  if (tileValue === TileValues.FREEZ) { return getFreeZonePopulation(map, x, y, tileValue) }
 
-  var populationIndex = (Math.floor((tileValue - TileValues.RZB) / 9) % 4) + 1
+  const populationIndex = (Math.floor((tileValue - TileValues.RZB) / 9) % 4) + 1
   return populationIndex * 8 + 16
 }
 
 // Assess a tile for suitability for a house. Prefers tiles near roads
-var evalLot = function (map, x, y) {
-  var xDelta = [0, 1, 0, -1]
-  var yDelta = [-1, 0, 1, 0]
+const evalLot = function (map, x, y) {
+  const xDelta = [0, 1, 0, -1]
+  const yDelta = [-1, 0, 1, 0]
 
   if (!map.testBounds(x, y)) return -1
 
-  var tileValue = map.getTileValue(x, y)
-  if (tileValue < TileValues.RESBASE || tileValue > TileValues.RESBASE + 8)
-    return -1
+  let tileValue = map.getTileValue(x, y)
+  if (tileValue < TileValues.RESBASE || tileValue > TileValues.RESBASE + 8) { return -1 }
 
-  var score = 1
-  for (var i = 0; i < 4; i++) {
-    var edgeX = x + xDelta[i]
-    var edgeY = y + yDelta[i]
+  let score = 1
+  for (let i = 0; i < 4; i++) {
+    const edgeX = x + xDelta[i]
+    const edgeY = y + yDelta[i]
 
-    if (edgeX < 0 || edgeX >= map.width || edgeY < 0 || edgeY >= map.height)
-      continue
+    if (edgeX < 0 || edgeX >= map.width || edgeY < 0 || edgeY >= map.height) { continue }
 
     tileValue = map.getTileValue(edgeX, edgeY)
-    if (tileValue !== TileValues.DIRT && tileValue <= TileValues.LASTROAD)
-      score += 1
+    if (tileValue !== TileValues.DIRT && tileValue <= TileValues.LASTROAD) { score += 1 }
   }
 
   return score
 }
 
-var buildHouse = function (map, x, y, lpValue) {
-  var best = 0
-  var bestScore = 0
+const buildHouse = function (map, x, y, lpValue) {
+  let best = 0
+  let bestScore = 0
 
   //  Deliberately ordered so that the centre tile is at index 0
-  var xDelta = [0, -1, 0, 1, -1, 1, -1, 0, 1]
-  var yDelta = [0, -1, -1, -1, 0, 0, 1, 1, 1]
+  const xDelta = [0, -1, 0, 1, -1, 1, -1, 0, 1]
+  const yDelta = [0, -1, -1, -1, 0, 0, 1, 1, 1]
 
-  for (var i = 0; i < 9; i++) {
-    var xx = x + xDelta[i]
-    var yy = y + yDelta[i]
+  for (let i = 0; i < 9; i++) {
+    const xx = x + xDelta[i]
+    const yy = y + yDelta[i]
 
-    var score = evalLot(map, xx, yy)
+    const score = evalLot(map, xx, yy)
     if (score > bestScore) {
       bestScore = score
       best = i
@@ -89,22 +84,23 @@ var buildHouse = function (map, x, y, lpValue) {
     }
   }
 
-  if (best > 0 && map.testBounds(x + xDelta[best], y + yDelta[best]))
+  if (best > 0 && map.testBounds(x + xDelta[best], y + yDelta[best])) {
     map.setTile(
       x + xDelta[best],
       y + yDelta[best],
       TileValues.HOUSE + Random.getRandom(2) + lpValue * 3,
       BLBNCNBIT
     )
+  }
 }
 
-var growZone = function (map, x, y, blockMaps, population, lpValue, zonePower) {
-  var pollution = blockMaps.pollutionDensityMap.worldGet(x, y)
+const growZone = function (map, x, y, blockMaps, population, lpValue, zonePower) {
+  const pollution = blockMaps.pollutionDensityMap.worldGet(x, y)
 
   // Cough! Too polluted! No-one wants to move here!
   if (pollution > 128) return
 
-  var tileValue = map.getTileValue(x, y)
+  const tileValue = map.getTileValue(x, y)
 
   if (tileValue === TileValues.FREEZ) {
     if (population < 8) {
@@ -134,9 +130,9 @@ var growZone = function (map, x, y, blockMaps, population, lpValue, zonePower) {
   }
 }
 
-var freeZone = [0, 3, 6, 1, 4, 7, 2, 5, 8]
+const freeZone = [0, 3, 6, 1, 4, 7, 2, 5, 8]
 
-var degradeZone = function (
+const degradeZone = function (
   map,
   x,
   y,
@@ -145,7 +141,7 @@ var degradeZone = function (
   lpValue,
   zonePower
 ) {
-  var xx, yy
+  let xx, yy
   if (population === 0) return
 
   if (population > 16) {
@@ -183,15 +179,15 @@ var degradeZone = function (
   }
 
   // Already down to individual houses. Remove one
-  var i = 0
+  let i = 0
   ZoneUtils.incRateOfGrowth(blockMaps, x, y, -1)
 
   for (xx = x - 1; xx <= x + 1; xx++) {
     for (yy = y - 1; yy <= y + 1; yy++, i++) {
-      var currentValue = map.getTileValue(xx, yy)
+      const currentValue = map.getTileValue(xx, yy)
       if (
-        currentValue >= TileValues.LHTHR &&
-        currentValue <= TileValues.HHTHR
+        currentValue >= TileValues.LHTHR
+        && currentValue <= TileValues.HHTHR
       ) {
         // We've found a house. Replace it with the normal free zone tile
         map.setTile(xx, yy, freeZone[i] + TileValues.RESBASE, BLBNCNBIT)
@@ -202,10 +198,10 @@ var degradeZone = function (
 }
 
 // Returns a score for the zone in the range -3000 - 3000
-var evalResidential = function (blockMaps, x, y, traffic) {
+const evalResidential = function (blockMaps, x, y, traffic) {
   if (traffic === Traffic.NO_ROAD_FOUND) return -3000
 
-  var landValue = blockMaps.landValueMap.worldGet(x, y)
+  let landValue = blockMaps.landValueMap.worldGet(x, y)
   landValue -= blockMaps.pollutionDensityMap.worldGet(x, y)
 
   if (landValue < 0) landValue = 0
@@ -214,22 +210,22 @@ var evalResidential = function (blockMaps, x, y, traffic) {
   return landValue - 3000
 }
 
-var residentialFound = function (map, x, y, simData) {
+const residentialFound = function (map, x, y, simData) {
   // If we choose to grow this zone, we will fill it with an index in the range 0-3 reflecting the land value and
   // pollution scores (higher is better). This is then used to select the variant to build
-  var lpValue
+  let lpValue
 
   // Notify the census
   simData.census.resZonePop += 1
 
   // Also, notify the census of our population
-  var tileValue = map.getTileValue(x, y)
-  var population = getZonePopulation(map, x, y, tileValue)
+  const tileValue = map.getTileValue(x, y)
+  const population = getZonePopulation(map, x, y, tileValue)
   simData.census.resPop += population
 
-  var zonePower = map.getTile(x, y).isPowered()
+  const zonePower = map.getTile(x, y).isPowered()
 
-  var trafficOK = Traffic.ROUTE_FOUND
+  let trafficOK = Traffic.ROUTE_FOUND
 
   // Occasionally check to see if the zone is connected to the road network. The chance of this happening increases
   // as the zone's population increases. Note: we will never execute this conditional if the zone is empty, as zero
@@ -256,8 +252,8 @@ var residentialFound = function (map, x, y, simData) {
   if (tileValue === TileValues.FREEZ || Random.getChance(7)) {
     // First, score the individual zone. This is a value in the range -3000 to 3000
     // Then take into account global demand for housing.
-    var locationScore = evalResidential(simData.blockMaps, x, y, trafficOK)
-    var zoneScore = simData.valves.resValve + locationScore
+    const locationScore = evalResidential(simData.blockMaps, x, y, trafficOK)
+    let zoneScore = simData.valves.resValve + locationScore
 
     // Naturally unpowered zones should be penalized
     if (!zonePower) zoneScore = -500
@@ -298,21 +294,21 @@ var residentialFound = function (map, x, y, simData) {
   }
 }
 
-var makeHospital = function (map, x, y, simData, zonePower) {
+function makeHospital(map, x, y, simData, zonePower) {
   // We only build a hospital if the population requires it
   if (simData.census.needHospital > 0) {
     ZoneUtils.putZone(map, x, y, TileValues.HOSPITAL, zonePower)
     simData.census.needHospital = 0
-    return
+
   }
 }
 
-var hospitalFound = function (map, x, y, simData) {
+const hospitalFound = function (map, x, y, simData) {
   simData.census.hospitalPop += 1
 
   // Degrade to an empty zone if a hospital is no longer sustainable
   if (simData.census.needHospital === -1) {
-    if (Random.getRandom(20) === 0)
+    if (Random.getRandom(20) === 0) {
       ZoneUtils.putZone(
         map,
         x,
@@ -320,16 +316,17 @@ var hospitalFound = function (map, x, y, simData) {
         TileValues.FREEZ,
         map.getTile(x, y).isPowered()
       )
+    }
   }
 }
 
-var Residential = {
+const Residential = {
   registerHandlers: function (mapScanner, repairManager) {
     mapScanner.addAction(TileUtils.isResidentialZone, residentialFound)
     mapScanner.addAction(TileValues.HOSPITAL, hospitalFound)
     repairManager.addAction(TileValues.HOSPITAL, 15, 3)
   },
-  getZonePopulation: getZonePopulation,
+  getZonePopulation,
 }
 
 export { Residential }

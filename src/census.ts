@@ -1,6 +1,6 @@
-import { MiscUtils } from './miscUtils'
+import { MiscUtils } from './utils'
 
-var arrs = ['res', 'com', 'ind', 'crime', 'money', 'pollution']
+const arrs = ['res', 'com', 'ind', 'crime', 'money', 'pollution']
 function Census() {
   this.clearCensus()
   this.changed = false
@@ -13,30 +13,30 @@ function Census() {
   this.crimeAverage = 0
   this.totalPop = 0
 
-  var createArray = function (arrName) {
+  const createArray = function (arrName) {
     this[arrName] = []
-    for (var a = 0; a < 120; a++) this[arrName][a] = 0
+    for (let a = 0; a < 120; a++) this[arrName][a] = 0
   }
 
-  for (var i = 0; i < arrs.length; i++) {
-    var name10 = arrs[i] + 'Hist10'
-    var name120 = arrs[i] + 'Hist120'
+  for (let i = 0; i < arrs.length; i++) {
+    const name10 = arrs[i] + 'Hist10'
+    const name120 = arrs[i] + 'Hist120'
     createArray.call(this, name10)
     createArray.call(this, name120)
   }
 }
 
-var rotate10Arrays = function () {
-  for (var i = 0; i < arrs.length; i++) {
-    var name10 = arrs[i] + 'Hist10'
+const rotate10Arrays = function () {
+  for (let i = 0; i < arrs.length; i++) {
+    const name10 = arrs[i] + 'Hist10'
     this[name10].pop()
     this[name10].unshift(0)
   }
 }
 
-var rotate120Arrays = function () {
-  for (var i = 0; i < arrs.length; i++) {
-    var name120 = arrs[i] + 'Hist120'
+const rotate120Arrays = function () {
+  for (let i = 0; i < arrs.length; i++) {
+    const name120 = arrs[i] + 'Hist120'
     this[name120].pop()
     this[name120].unshift(0)
   }
@@ -65,7 +65,7 @@ Census.prototype.clearCensus = function () {
   this.airportPop = 0
 }
 
-var saveProps = [
+const saveProps = [
   'resPop',
   'comPop',
   'indPop',
@@ -90,17 +90,15 @@ var saveProps = [
 ]
 
 Census.prototype.save = function (saveData) {
-  for (var i = 0, l = saveProps.length; i < l; i++)
-    saveData[saveProps[i]] = this[saveProps[i]]
+  for (let i = 0, l = saveProps.length; i < l; i++) { saveData[saveProps[i]] = this[saveProps[i]] }
 }
 
 Census.prototype.load = function (saveData) {
-  for (var i = 0, l = saveProps.length; i < l; i++)
-    this[saveProps[i]] = saveData[saveProps[i]]
+  for (let i = 0, l = saveProps.length; i < l; i++) { this[saveProps[i]] = saveData[saveProps[i]] }
 }
 
 Census.prototype.take10Census = function (budget) {
-  var resPopDenom = 8
+  const resPopDenom = 8
 
   rotate10Arrays.call(this)
 
@@ -116,10 +114,10 @@ Census.prototype.take10Census = function (budget) {
   )
   this.pollutionHist10[0] = Math.min(this.pollutionRamp, 255)
 
-  var x = Math.floor(budget.cashFlow / 20) + 128
+  const x = Math.floor(budget.cashFlow / 20) + 128
   this.moneyHist10[0] = MiscUtils.clamp(x, 0, 255)
 
-  var resPopScaled = this.resPop >> 8
+  const resPopScaled = this.resPop >> 8
 
   if (this.hospitalPop < this.resPopScaled) this.needHospital = 1
   else if (this.hospitalPop > this.resPopScaled) this.needHospital = -1
@@ -130,7 +128,7 @@ Census.prototype.take10Census = function (budget) {
 
 Census.prototype.take120Census = function () {
   rotate120Arrays.call(this)
-  var resPopDenom = 8
+  const resPopDenom = 8
 
   this.resHist120[0] = Math.floor(this.resPop / resPopDenom)
   this.comHist120[0] = this.comPop

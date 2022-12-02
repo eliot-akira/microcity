@@ -1,7 +1,21 @@
-import { MiscUtils } from './miscUtils'
-import { Text } from './text'
+import { MiscUtils } from './utils'
+import { Text } from './messages/text'
 
-var TIMEOUT_SECS = 30
+const TIMEOUT_SECS = 30
+
+const close = function (e) {
+  if (e) e.preventDefault()
+
+  if (this._element.is(':visible')) this._element.toggle()
+}
+
+const handleClick = function (e) {
+  e.preventDefault()
+
+  if (this._x === -1 || this._y === -1) return
+
+  this._map.centreOn(this._x, this._y)
+}
 
 function Notification(element, map, initialText) {
   element = MiscUtils.normaliseDOMid(element)
@@ -18,12 +32,6 @@ function Notification(element, map, initialText) {
 
   this._element.click(this._handleClick)
   this.close = close.bind(this)
-
-  if (this._element.is(':visible')) this._element.toggle()
-}
-
-var close = function (e) {
-  if (e) e.preventDefault()
 
   if (this._element.is(':visible')) this._element.toggle()
 }
@@ -74,20 +82,12 @@ Notification.prototype._displayText = function (text, x, y) {
   )
 }
 
-var handleClick = function (e) {
-  e.preventDefault()
-
-  if (this._x === -1 || this._y === -1) return
-
-  this._map.centreOn(this._x, this._y)
-}
-
 Notification.prototype.createMessage = function (message) {
   if (
-    message.hasOwnProperty('data') &&
-    message.data !== undefined &&
-    message.data.hasOwnProperty('x') &&
-    message.data.hasOwnProperty('y')
+    message.hasOwnProperty('data')
+    && message.data !== undefined
+    && message.data.hasOwnProperty('x')
+    && message.data.hasOwnProperty('y')
   ) {
     this._displayLink(
       Text.messageText[message.subject],

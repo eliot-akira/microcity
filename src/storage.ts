@@ -1,16 +1,15 @@
-import { MiscUtils } from './miscUtils'
+import { MiscUtils } from './utils'
 
 // A very thin wrapper around localStorage, in case we wish to move to some other storage mechanism
 // (such as indexedDB) in the future
 
-var getSavedGame = function () {
-  var savedGame = window.localStorage.getItem(this.KEY)
+const getSavedGame = function () {
+  let savedGame = window.localStorage.getItem(this.KEY)
 
   if (savedGame !== null) {
     savedGame = JSON.parse(savedGame)
 
-    if (savedGame.version !== this.CURRENT_VERSION)
-      this.transitionOldSave(savedGame)
+    if (savedGame.version !== this.CURRENT_VERSION) { this.transitionOldSave(savedGame) }
 
     // Flag as a saved game for Game/Simulation etc...
     savedGame.isSavedGame = true
@@ -19,14 +18,14 @@ var getSavedGame = function () {
   return savedGame
 }
 
-var saveGame = function (gameData) {
+const saveGame = function (gameData) {
   gameData.version = this.CURRENT_VERSION
   gameData = JSON.stringify(gameData)
 
   window.localStorage.setItem(this.KEY, gameData)
 }
 
-var transitionOldSave = function (savedGame) {
+const transitionOldSave = function (savedGame) {
   switch (savedGame.version) {
     case 1:
       savedGame.everClicked = false
@@ -45,10 +44,10 @@ var transitionOldSave = function (savedGame) {
   }
 }
 
-var Storage = {
-  getSavedGame: getSavedGame,
-  saveGame: saveGame,
-  transitionOldSave: transitionOldSave,
+const Storage = {
+  getSavedGame,
+  saveGame,
+  transitionOldSave,
 }
 
 Object.defineProperty(

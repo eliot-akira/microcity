@@ -1,5 +1,5 @@
-import { BlockMap } from './blockMap'
-import { BlockMapUtils } from './blockMapUtils'
+import { BlockMap } from './map/blockMap'
+import { BlockMapUtils } from './map/blockMapUtils'
 import { Budget } from './budget'
 import { Census } from './census'
 import { Commercial } from './commercial'
@@ -8,21 +8,21 @@ import { EventEmitter } from './eventEmitter'
 import { EmergencyServices } from './emergencyServices'
 import { Evaluation } from './evaluation'
 import { Industrial } from './industrial'
-import { MapScanner } from './mapScanner'
+import { MapScanner } from './map/mapScanner'
 import * as Messages from './messages'
-import { MiscTiles } from './miscTiles'
-import { MiscUtils } from './miscUtils'
+import { MiscTiles } from './tiles/miscTiles'
+import { MiscUtils } from './utils'
 import { PowerManager } from './powerManager'
 import { RepairManager } from './repairManager'
 import { Residential } from './residential'
 import { Road } from './road'
-import { SpriteManager } from './spriteManager'
+import { SpriteManager } from './sprites/spriteManager'
 import { Stadia } from './stadia'
 import { Traffic } from './traffic'
 import { Transport } from './transport'
 import { Valves } from './valves'
 
-var Simulation = EventEmitter(function (gameMap, gameLevel, speed, savedGame) {
+const Simulation = EventEmitter(function (gameMap, gameLevel, speed, savedGame) {
   this._map = gameMap
   this.setLevel(gameLevel)
   this.setSpeed(speed)
@@ -114,23 +114,21 @@ var Simulation = EventEmitter(function (gameMap, gameLevel, speed, savedGame) {
 
 Simulation.prototype.setLevel = function (l) {
   if (
-    l !== Simulation.LEVEL_EASY &&
-    l !== Simulation.LEVEL_MED &&
-    l !== Simulation.LEVEL_HARD
-  )
-    throw new Error('Invalid level!')
+    l !== Simulation.LEVEL_EASY
+    && l !== Simulation.LEVEL_MED
+    && l !== Simulation.LEVEL_HARD
+  ) { throw new Error('Invalid level!') }
 
   this._gameLevel = l
 }
 
 Simulation.prototype.setSpeed = function (s) {
   if (
-    s !== Simulation.SPEED_PAUSED &&
-    s !== Simulation.SPEED_SLOW &&
-    s !== Simulation.SPEED_MED &&
-    s !== Simulation.SPEED_FAST
-  )
-    throw new Error('Invalid speed!')
+    s !== Simulation.SPEED_PAUSED
+    && s !== Simulation.SPEED_SLOW
+    && s !== Simulation.SPEED_MED
+    && s !== Simulation.SPEED_FAST
+  ) { throw new Error('Invalid speed!') }
 
   this._speed = s
 }
@@ -139,11 +137,10 @@ Simulation.prototype.isPaused = function () {
   return this._speed === Simulation.SPEED_PAUSED
 }
 
-var saveProps = ['_cityTime', '_speed', '_gameLevel']
+const saveProps = ['_cityTime', '_speed', '_gameLevel']
 
 Simulation.prototype.save = function (saveData) {
-  for (var i = 0, l = saveProps.length; i < l; i++)
-    saveData[saveProps[i]] = this[saveProps[i]]
+  for (let i = 0, l = saveProps.length; i < l; i++) { saveData[saveProps[i]] = this[saveProps[i]] }
 
   this._map.save(saveData)
   this.evaluation.save(saveData)
@@ -153,8 +150,7 @@ Simulation.prototype.save = function (saveData) {
 }
 
 Simulation.prototype.load = function (saveData) {
-  for (var i = 0, l = saveProps.length; i < l; i++)
-    this[saveProps[i]] = saveData[saveProps[i]]
+  for (let i = 0, l = saveProps.length; i < l; i++) { this[saveProps[i]] = saveData[saveProps[i]] }
 
   this._map.load(saveData)
   this.evaluation.load(saveData)
@@ -173,7 +169,7 @@ Simulation.prototype._simFrame = function () {
   if (this.budget.awaitingValues) return
 
   // Default to slow speed
-  var threshold = 100
+  let threshold = 100
 
   switch (this._speed) {
     case Simulation.SPEED_PAUSED:
@@ -195,10 +191,10 @@ Simulation.prototype._simFrame = function () {
       console.warn('Unexpected speed (' + this._speed + '): defaulting to slow')
   }
 
-  var d = new Date()
+  const d = new Date()
   if (d - this._lastTickTime < threshold) return
 
-  var simData = this._constructSimData()
+  const simData = this._constructSimData()
   this._simulate(simData)
   this._lastTickTime = new Date()
 }
@@ -231,27 +227,28 @@ Simulation.prototype.init = function () {
   this._lastTickTime = -1
 
   // Add various listeners that we will in turn transmit upwards
-  var evaluationEvents = [
+  const evaluationEvents = [
     'CLASSIFICATION_UPDATED',
     'POPULATION_UPDATED',
     'SCORE_UPDATED',
   ].map(function (m) {
     return Messages[m]
   })
-  for (var i = 0, l = evaluationEvents.length; i < l; i++)
+  for (var i = 0, l = evaluationEvents.length; i < l; i++) {
     this.evaluation.addEventListener(
       evaluationEvents[i],
       MiscUtils.reflectEvent.bind(this, evaluationEvents[i])
     )
+  }
 
   this._powerManager.addEventListener(
     Messages.NOT_ENOUGH_POWER,
     function (e) {
-      var d = new Date()
+      const d = new Date()
 
       if (
-        this._lastPowerMessage === null ||
-        d - this._lastPowerMessage > 1000 * 60 * 2
+        this._lastPowerMessage === null
+        || d - this._lastPowerMessage > 1000 * 60 * 2
       ) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.NOT_ENOUGH_POWER,
@@ -289,11 +286,12 @@ Simulation.prototype.init = function () {
       this._wrapMessage.bind(this, Messages.DISASTER_MESSAGES[i])
     )
   }
-  for (i = 0, l = Messages.CRASHES.length; i < l; i++)
+  for (i = 0, l = Messages.CRASHES.length; i < l; i++) {
     this.spriteManager.addEventListener(
       Messages.CRASHES[i],
       this._wrapMessage.bind(this, Messages.CRASHES[i])
     )
+  }
 
   this.spriteManager.addEventListener(
     Messages.HEAVY_TRAFFIC,
@@ -311,7 +309,7 @@ Simulation.prototype.init = function () {
   Stadia.registerHandlers(this._mapScanner, this._repairManager)
   Transport.registerHandlers(this._mapScanner, this._repairManager)
 
-  var simData = this._constructSimData()
+  const simData = this._constructSimData()
   this._mapScanner.mapScan(0, this._map.width, simData)
   this._powerManager.doPowerScan(this._census)
   BlockMapUtils.pollutionTerrainLandValueScan(
@@ -324,18 +322,18 @@ Simulation.prototype.init = function () {
   BlockMapUtils.fireAnalysis(this.blockMaps)
 }
 
-var speedPowerScan = [2, 4, 5]
-var speedPollutionTerrainLandValueScan = [2, 7, 17]
-var speedCrimeScan = [1, 8, 18]
-var speedPopulationDensityScan = [1, 9, 19]
-var speedFireAnalysis = [1, 10, 20]
-var CENSUS_FREQUENCY_10 = 4
-var CENSUS_FREQUENCY_120 = CENSUS_FREQUENCY_10 * 10
-var TAX_FREQUENCY = 48
+const speedPowerScan = [2, 4, 5]
+const speedPollutionTerrainLandValueScan = [2, 7, 17]
+const speedCrimeScan = [1, 8, 18]
+const speedPopulationDensityScan = [1, 9, 19]
+const speedFireAnalysis = [1, 10, 20]
+const CENSUS_FREQUENCY_10 = 4
+const CENSUS_FREQUENCY_120 = CENSUS_FREQUENCY_10 * 10
+const TAX_FREQUENCY = 48
 
-var simulate = function (simData) {
+const simulate = function (simData) {
   this._phaseCycle &= 15
-  var speedIndex = this._speed - 1
+  const speedIndex = this._speed - 1
 
   switch (this._phaseCycle) {
     case 0:
@@ -343,8 +341,7 @@ var simulate = function (simData) {
 
       this._cityTime++
 
-      if ((this._simCycle & 1) === 0)
-        this._valves.setValves(this._gameLevel, this._census, this.budget)
+      if ((this._simCycle & 1) === 0) { this._valves.setValves(this._gameLevel, this._census, this.budget) }
 
       this._clearCensus()
       break
@@ -365,11 +362,9 @@ var simulate = function (simData) {
       break
 
     case 9:
-      if (this._cityTime % CENSUS_FREQUENCY_10 === 0)
-        this._census.take10Census(budget)
+      if (this._cityTime % CENSUS_FREQUENCY_10 === 0) { this._census.take10Census(budget) }
 
-      if (this._cityTime % CENSUS_FREQUENCY_120 === 0)
-        this._census.take120Census(budget)
+      if (this._cityTime % CENSUS_FREQUENCY_120 === 0) { this._census.take120Census(budget) }
 
       if (this._cityTime % TAX_FREQUENCY === 0) {
         this.budget.collectTax(this._gameLevel, this._census)
@@ -379,40 +374,36 @@ var simulate = function (simData) {
       break
 
     case 10:
-      if (this._simCycle % 5 === 0)
-        BlockMapUtils.neutraliseRateOfGrowthMap(simData.blockMaps)
+      if (this._simCycle % 5 === 0) { BlockMapUtils.neutraliseRateOfGrowthMap(simData.blockMaps) }
 
       BlockMapUtils.neutraliseTrafficMap(this.blockMaps)
       this._sendMessages()
       break
 
     case 11:
-      if (this._simCycle % speedPowerScan[speedIndex] === 0)
-        this._powerManager.doPowerScan(this._census)
+      if (this._simCycle % speedPowerScan[speedIndex] === 0) { this._powerManager.doPowerScan(this._census) }
       break
 
     case 12:
-      if (this._simCycle % speedPollutionTerrainLandValueScan[speedIndex] === 0)
+      if (this._simCycle % speedPollutionTerrainLandValueScan[speedIndex] === 0) {
         BlockMapUtils.pollutionTerrainLandValueScan(
           this._map,
           this._census,
           this.blockMaps
         )
+      }
       break
 
     case 13:
-      if (this._simCycle % speedCrimeScan[speedIndex] === 0)
-        BlockMapUtils.crimeScan(this._census, this.blockMaps)
+      if (this._simCycle % speedCrimeScan[speedIndex] === 0) { BlockMapUtils.crimeScan(this._census, this.blockMaps) }
       break
 
     case 14:
-      if (this._simCycle % speedPopulationDensityScan[speedIndex] === 0)
-        BlockMapUtils.populationDensityScan(this._map, this.blockMaps)
+      if (this._simCycle % speedPopulationDensityScan[speedIndex] === 0) { BlockMapUtils.populationDensityScan(this._map, this.blockMaps) }
       break
 
     case 15:
-      if (this._simCycle % speedFireAnalysis[speedIndex] === 0)
-        BlockMapUtils.fireAnalysis(this.blockMaps)
+      if (this._simCycle % speedFireAnalysis[speedIndex] === 0) { BlockMapUtils.fireAnalysis(this.blockMaps) }
 
       this.disasterManager.doDisasters(this._census)
       break
@@ -432,57 +423,63 @@ Simulation.prototype._simulate = function (simData) {
 }
 
 Simulation.prototype._wrapMessage = function (message, data) {
-  this._emitEvent(Messages.FRONT_END_MESSAGE, { subject: message, data: data })
+  this._emitEvent(Messages.FRONT_END_MESSAGE, { subject: message, data })
 }
 
 Simulation.prototype._sendMessages = function () {
   this._checkGrowth()
 
-  var totalZonePop =
+  const totalZonePop =
     this._census.resZonePop + this._census.comZonePop + this._census.indZonePop
-  var powerPop = this._census.nuclearPowerPop + this._census.coalPowerPop
+  const powerPop = this._census.nuclearPowerPop + this._census.coalPowerPop
 
   switch (this._cityTime & 63) {
     case 1:
-      if (Math.floor(totalZonePop / 4) >= this._census.resZonePop)
+      if (Math.floor(totalZonePop / 4) >= this._census.resZonePop) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.NEED_MORE_RESIDENTIAL,
         })
+      }
       break
 
     case 5:
-      if (Math.floor(totalZonePop / 8) >= this._census.comZonePop)
+      if (Math.floor(totalZonePop / 8) >= this._census.comZonePop) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.NEED_MORE_COMMERCIAL,
         })
+      }
       break
 
     case 10:
-      if (Math.floor(totalZonePop / 8) >= this._census.indZonePop)
+      if (Math.floor(totalZonePop / 8) >= this._census.indZonePop) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.NEED_MORE_INDUSTRIAL,
         })
+      }
       break
 
     case 14:
-      if (totalZonePop > 10 && totalZonePop * 2 > this._census.roadTotal)
+      if (totalZonePop > 10 && totalZonePop * 2 > this._census.roadTotal) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.NEED_MORE_ROADS,
         })
+      }
       break
 
     case 18:
-      if (totalZonePop > 50 && totalZonePop > this._census.railTotal)
+      if (totalZonePop > 50 && totalZonePop > this._census.railTotal) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.NEED_MORE_RAILS,
         })
+      }
       break
 
     case 22:
-      if (totalZonePop > 10 && powerPop === 0)
+      if (totalZonePop > 10 && powerPop === 0) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.NEED_ELECTRICITY,
         })
+      }
       break
 
     case 26:
@@ -523,10 +520,10 @@ Simulation.prototype._sendMessages = function () {
         this._census.unpoweredZoneCount + this._census.poweredZoneCount
       if (zoneCount > 0) {
         if (this._census.poweredZoneCount / zoneCount < 0.7 && powerPop > 0) {
-          var d = new Date()
+          const d = new Date()
           if (
-            this._lastPowerMessage === null ||
-            d - this._lastPowerMessage > 1000 * 60 * 2
+            this._lastPowerMessage === null
+            || d - this._lastPowerMessage > 1000 * 60 * 2
           ) {
             this._emitEvent(Messages.FRONT_END_MESSAGE, {
               subject: Messages.BLACKOUTS_REPORTED,
@@ -538,79 +535,88 @@ Simulation.prototype._sendMessages = function () {
       break
 
     case 35:
-      if (this._census.pollutionAverage > 60)
+      if (this._census.pollutionAverage > 60) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.HIGH_POLLUTION,
           data: { x: this._map.pollutionMaxX, y: this._map.pollutionMaxY },
         })
+      }
       break
 
     case 42:
-      if (this._census.crimeAverage > 100)
+      if (this._census.crimeAverage > 100) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.HIGH_CRIME,
         })
+      }
       break
 
     case 45:
-      if (this._census.totalPop > 60 && this._census.fireStationPop === 0)
+      if (this._census.totalPop > 60 && this._census.fireStationPop === 0) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.NEED_FIRE_STATION,
         })
+      }
       break
 
     case 48:
-      if (this._census.totalPop > 60 && this._census.policeStationPop === 0)
+      if (this._census.totalPop > 60 && this._census.policeStationPop === 0) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.NEED_POLICE_STATION,
         })
+      }
       break
 
     case 51:
-      if (this.budget.cityTax > 12)
+      if (this.budget.cityTax > 12) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.TAX_TOO_HIGH,
         })
+      }
       break
 
     case 54:
       if (
-        this.budget.roadEffect <
-          Math.floor((5 * this.budget.MAX_ROAD_EFFECT) / 8) &&
-        this._census.roadTotal > 30
-      )
+        this.budget.roadEffect
+          < Math.floor((5 * this.budget.MAX_ROAD_EFFECT) / 8)
+        && this._census.roadTotal > 30
+      ) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.ROAD_NEEDS_FUNDING,
         })
+      }
       break
 
     case 57:
       if (
-        this.budget.fireEffect <
-          Math.floor((7 * this.budget.MAX_FIRE_STATION_EFFECT) / 10) &&
-        this._census.totalPop > 20
-      )
+        this.budget.fireEffect
+          < Math.floor((7 * this.budget.MAX_FIRE_STATION_EFFECT) / 10)
+        && this._census.totalPop > 20
+      ) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.FIRE_STATION_NEEDS_FUNDING,
         })
+      }
       break
 
     case 60:
       if (
-        this.budget.policeEffect <
-          Math.floor((7 * this.budget.MAX_POLICE_STATION_EFFECT) / 10) &&
-        this._census.totalPop > 20
-      )
+        this.budget.policeEffect
+          < Math.floor((7 * this.budget.MAX_POLICE_STATION_EFFECT) / 10)
+        && this._census.totalPop > 20
+      ) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.POLICE_NEEDS_FUNDING,
         })
+      }
       break
 
     case 63:
-      if (this._census.trafficAverage > 60)
+      if (this._census.trafficAverage > 60) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
           subject: Messages.TRAFFIC_JAMS,
         })
+      }
       break
   }
 }
@@ -618,12 +624,12 @@ Simulation.prototype._sendMessages = function () {
 Simulation.prototype._checkGrowth = function () {
   if ((this._cityTime & 3) !== 0) return
 
-  var message = ''
-  var cityPop = this.evaluation.getPopulation(this._census)
+  let message = ''
+  const cityPop = this.evaluation.getPopulation(this._census)
 
   if (cityPop !== this._cityPopLast) {
-    var lastClass = this.evaluation.getCityClass(this._cityPopLast)
-    var newClass = this.evaluation.getCityClass(cityPop)
+    const lastClass = this.evaluation.getCityClass(this._cityPopLast)
+    const newClass = this.evaluation.getCityClass(cityPop)
 
     if (lastClass !== newClass) {
       switch (newClass) {
@@ -678,9 +684,9 @@ Simulation.prototype._onValveChange = function () {
 }
 
 Simulation.prototype.getDate = function () {
-  var year = Math.floor(this._cityTime / 48) + this._startingYear
-  var month = Math.floor(this._cityTime % 48) >> 2
-  return { month: month, year: year }
+  const year = Math.floor(this._cityTime / 48) + this._startingYear
+  const month = Math.floor(this._cityTime % 48) >> 2
+  return { month, year }
 }
 
 Simulation.prototype._setYear = function (year) {
@@ -692,9 +698,9 @@ Simulation.prototype._setYear = function (year) {
 }
 
 Simulation.prototype._updateTime = function () {
-  var megalinium = 1000000
-  var cityYear = Math.floor(this._cityTime / 48) + this._startingYear
-  var cityMonth = Math.floor(this._cityTime % 48) >> 2
+  const megalinium = 1000000
+  const cityYear = Math.floor(this._cityTime / 48) + this._startingYear
+  const cityMonth = Math.floor(this._cityTime % 48) >> 2
 
   if (cityYear >= megalinium) {
     this.setYear(startingYear)

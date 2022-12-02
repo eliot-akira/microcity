@@ -1,9 +1,9 @@
-import { MiscUtils } from './miscUtils'
-import { BULLBIT, POWERBIT } from './tileFlags'
-import * as TileValues from './tileValues'
+import { MiscUtils } from './utils'
+import { BULLBIT, POWERBIT } from './tiles/tileFlags'
+import * as TileValues from './tiles/tileValues'
 
-var checkBigZone = function (tileValue) {
-  var result
+const checkBigZone = function (tileValue) {
+  let result
 
   switch (tileValue) {
     case TileValues.POWERPLANT:
@@ -109,22 +109,22 @@ var checkBigZone = function (tileValue) {
   return result
 }
 
-var checkZoneSize = function (tileValue) {
+const checkZoneSize = function (tileValue) {
   if (
-    (tileValue >= TileValues.RESBASE - 1 &&
-      tileValue <= TileValues.PORTBASE - 1) ||
-    (tileValue >= TileValues.LASTPOWERPLANT + 1 &&
-      tileValue <= TileValues.POLICESTATION + 4) ||
-    (tileValue >= TileValues.CHURCH1BASE && tileValue <= TileValues.CHURCH7LAST)
+    (tileValue >= TileValues.RESBASE - 1
+      && tileValue <= TileValues.PORTBASE - 1)
+    || (tileValue >= TileValues.LASTPOWERPLANT + 1
+      && tileValue <= TileValues.POLICESTATION + 4)
+    || (tileValue >= TileValues.CHURCH1BASE && tileValue <= TileValues.CHURCH7LAST)
   ) {
     return 3
   }
 
   if (
-    (tileValue >= TileValues.PORTBASE && tileValue <= TileValues.LASTPORT) ||
-    (tileValue >= TileValues.COALBASE &&
-      tileValue <= TileValues.LASTPOWERPLANT) ||
-    (tileValue >= TileValues.STADIUMBASE && tileValue <= TileValues.LASTZONE)
+    (tileValue >= TileValues.PORTBASE && tileValue <= TileValues.LASTPORT)
+    || (tileValue >= TileValues.COALBASE
+      && tileValue <= TileValues.LASTPOWERPLANT)
+    || (tileValue >= TileValues.STADIUMBASE && tileValue <= TileValues.LASTZONE)
   ) {
     return 4
   }
@@ -132,12 +132,12 @@ var checkZoneSize = function (tileValue) {
   return 0
 }
 
-var fireZone = function (map, x, y, blockMaps) {
-  var tileValue = map.getTileValue(x, y)
-  var zoneSize = 2
+const fireZone = function (map, x, y, blockMaps) {
+  const tileValue = map.getTileValue(x, y)
+  let zoneSize = 2
 
   // A zone being on fire naturally hurts growth
-  var value = blockMaps.rateOfGrowthMap.worldGet(x, y)
+  let value = blockMaps.rateOfGrowthMap.worldGet(x, y)
   value = MiscUtils.clamp(value - 20, -200, 200)
   blockMaps.rateOfGrowthMap.worldSet(x, y, value)
 
@@ -146,21 +146,20 @@ var fireZone = function (map, x, y, blockMaps) {
   else if (tileValue < TileValues.PORTBASE) zoneSize = 2
 
   // Make remaining tiles of the zone bulldozable
-  for (var xDelta = -1; xDelta < zoneSize; xDelta++) {
-    for (var yDelta = -1; yDelta < zoneSize; yDelta++) {
-      var xTem = x + xDelta
-      var yTem = y + yDelta
+  for (let xDelta = -1; xDelta < zoneSize; xDelta++) {
+    for (let yDelta = -1; yDelta < zoneSize; yDelta++) {
+      const xTem = x + xDelta
+      const yTem = y + yDelta
 
       if (!map.testBounds(xTem, yTem)) continue
 
-      if (map.getTileValue(xTem, yTem >= TileValues.ROADBASE))
-        map.addTileFlags(xTem, yTem, BULLBIT)
+      if (map.getTileValue(xTem, yTem >= TileValues.ROADBASE)) { map.addTileFlags(xTem, yTem, BULLBIT) }
     }
   }
 }
 
-var getLandPollutionValue = function (blockMaps, x, y) {
-  var landValue = blockMaps.landValueMap.worldGet(x, y)
+const getLandPollutionValue = function (blockMaps, x, y) {
+  let landValue = blockMaps.landValueMap.worldGet(x, y)
   landValue -= blockMaps.pollutionDensityMap.worldGet(x, y)
 
   if (landValue < 30) return 0
@@ -170,21 +169,20 @@ var getLandPollutionValue = function (blockMaps, x, y) {
   return 3
 }
 
-var incRateOfGrowth = function (blockMaps, x, y, growthDelta) {
-  var currentRate = blockMaps.rateOfGrowthMap.worldGet(x, y)
+const incRateOfGrowth = function (blockMaps, x, y, growthDelta) {
+  const currentRate = blockMaps.rateOfGrowthMap.worldGet(x, y)
   // TODO why the scale of 4 here
-  var newValue = MiscUtils.clamp(currentRate + growthDelta * 4, -200, 200)
+  const newValue = MiscUtils.clamp(currentRate + growthDelta * 4, -200, 200)
   blockMaps.rateOfGrowthMap.worldSet(x, y, newValue)
 }
 
 // Calls map.putZone after first checking for flood, fire
 // and radiation. Should be called with coordinates of centre tile.
-var putZone = function (map, x, y, centreTile, isPowered) {
-  for (var dY = -1; dY < 2; dY++) {
-    for (var dX = -1; dX < 2; dX++) {
-      var tileValue = map.getTileValue(x + dX, y + dY)
-      if (tileValue >= TileValues.FLOOD && tileValue < TileValues.ROADBASE)
-        return
+const putZone = function (map, x, y, centreTile, isPowered) {
+  for (let dY = -1; dY < 2; dY++) {
+    for (let dX = -1; dX < 2; dX++) {
+      const tileValue = map.getTileValue(x + dX, y + dY)
+      if (tileValue >= TileValues.FLOOD && tileValue < TileValues.ROADBASE) { return }
     }
   }
   map.putZone(x, y, centreTile, 3)
@@ -192,13 +190,13 @@ var putZone = function (map, x, y, centreTile, isPowered) {
   if (isPowered) map.addTileFlags(x, y, POWERBIT)
 }
 
-var ZoneUtils = {
-  checkBigZone: checkBigZone,
-  checkZoneSize: checkZoneSize,
-  fireZone: fireZone,
-  getLandPollutionValue: getLandPollutionValue,
-  incRateOfGrowth: incRateOfGrowth,
-  putZone: putZone,
+const ZoneUtils = {
+  checkBigZone,
+  checkZoneSize,
+  fireZone,
+  getLandPollutionValue,
+  incRateOfGrowth,
+  putZone,
 }
 
 export { ZoneUtils }

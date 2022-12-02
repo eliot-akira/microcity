@@ -1,5 +1,5 @@
 import { assert } from "./debugAssert";
-import { Position } from "./position";
+import { Position } from "./map/position";
 
 export class Bounds {
 

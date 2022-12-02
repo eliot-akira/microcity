@@ -1,7 +1,7 @@
 import { Random } from './random'
-import { ANIMBIT, ASCBIT, BNCNBIT } from './tileFlags'
-import { TileUtils } from './tileUtils'
-import { INDCLR, IZB } from './tileValues'
+import { ANIMBIT, ASCBIT, BNCNBIT } from './tiles/tileFlags'
+import { TileUtils } from './tiles/tileUtils'
+import { INDCLR, IZB } from './tiles/tileValues'
 import { Traffic } from './traffic'
 import { ZoneUtils } from './zoneUtils'
 

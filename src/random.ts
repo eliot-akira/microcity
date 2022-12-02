@@ -10,30 +10,30 @@ type SixteenBitRNG = () => number;
 
 function getChance(chance: number, rng: SixteenBitRNG = getRandom16): boolean {
   // tslint:disable-next-line:no-bitwise
-  return (rng() & chance) === 0;
+  return (rng() & chance) === 0
 }
 
 function getERandom(max: number, rng: UpperBoundedRNG = getRandom): number {
-  const firstCandidate = rng(max);
-  const secondCandidate = rng(max);
-  return Math.min(firstCandidate, secondCandidate);
+  const firstCandidate = rng(max)
+  const secondCandidate = rng(max)
+  return Math.min(firstCandidate, secondCandidate)
 }
 
 function getRandom(max: number, mathGlobal: MathGlobal = Math): number {
-  return mathGlobal.floor(mathGlobal.random() * (max + 1));
+  return mathGlobal.floor(mathGlobal.random() * (max + 1))
 }
 
 function getRandom16(rng: UpperBoundedRNG = getRandom): number {
-  return rng(65535);
+  return rng(65535)
 }
 
 function getRandom16Signed(rng: SixteenBitRNG = getRandom16) {
-  const value = rng();
+  const value = rng()
 
   if (value < 32768) {
-    return value;
+    return value
   } else {
-    return -(2 ** 16) + value;
+    return -(2 ** 16) + value
   }
 }
 
@@ -43,6 +43,6 @@ const Random = {
   getRandom,
   getRandom16,
   getRandom16Signed,
-};
+}
 
-export { Random };
+export { Random }

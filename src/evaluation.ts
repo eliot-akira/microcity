@@ -4,7 +4,7 @@ import {
   POPULATION_UPDATED,
   SCORE_UPDATED,
 } from './messages'
-import { MiscUtils } from './miscUtils'
+import { MiscUtils } from './utils'
 import { Random } from './random'
 
 var PROBLEMS = [

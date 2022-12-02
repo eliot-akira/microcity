@@ -1,15 +1,15 @@
-import { Tile } from './tile'
+import { Tile } from './tiles/tile'
 
 function WorldEffects(map) {
   this._map = map
   this._data = {}
 }
 
-var toKey = function (x, y) {
+const toKey = function (x, y) {
   return [x, y].join(',')
 }
 
-var fromKey = function (k) {
+const fromKey = function (k) {
   k = k.split(',')
   return {
     x: k[0] - 0,
@@ -25,8 +25,8 @@ WorldEffects.prototype.clear = function () {
 }
 
 WorldEffects.prototype.getTile = function (x, y) {
-  var key = toKey(x, y)
-  var tile = this._data[key]
+  const key = toKey(x, y)
+  let tile = this._data[key]
   if (tile === undefined) tile = this._map.getTile(x, y)
   return tile
 }
@@ -36,25 +36,25 @@ WorldEffects.prototype.getTileValue = function (x, y) {
 }
 
 WorldEffects.prototype.setTile = function (x, y, value, flags) {
-  if (flags !== undefined && value instanceof Tile)
-    throw new Error('Flags supplied with already defined tile')
+  if (flags !== undefined && value instanceof Tile) { throw new Error('Flags supplied with already defined tile') }
 
-  if (!this._map.testBounds(x, y))
+  if (!this._map.testBounds(x, y)) {
     throw new Error(
       'WorldEffects setTile called with invalid bounds ' + x + ', ' + y
     )
+  }
 
   if (flags === undefined && !(value instanceof Tile)) value = new Tile(value)
   else if (flags !== undefined) value = new Tile(value, flags)
 
-  var key = toKey(x, y)
+  const key = toKey(x, y)
   this._data[key] = value
 }
 
 WorldEffects.prototype.apply = function () {
-  var keys = Object.keys(this._data)
-  for (var i = 0, l = keys.length; i < l; i++) {
-    var coords = fromKey(keys[i])
+  const keys = Object.keys(this._data)
+  for (let i = 0, l = keys.length; i < l; i++) {
+    const coords = fromKey(keys[i])
     this._map.setTo(coords, this._data[keys[i]])
   }
 }

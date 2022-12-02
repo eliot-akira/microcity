@@ -1,11 +1,11 @@
-import { forEachCardinalDirection } from './direction'
-import { MiscUtils } from './miscUtils'
-import { Position } from './position'
+import { forEachCardinalDirection } from './map/direction'
+import { MiscUtils } from './utils'
+import { Position } from './map/position'
 import { Random } from './random'
-import { SPRITE_HELICOPTER } from './spriteConstants'
-import { SpriteUtils } from './spriteUtils'
-import { TileUtils } from './tileUtils'
-import { DIRT, POWERBASE, ROADBASE } from './tileValues'
+import { SPRITE_HELICOPTER } from './sprites/spriteConstants'
+import { SpriteUtils } from './sprites/spriteUtils'
+import { TileUtils } from './tiles/tileUtils'
+import { DIRT, POWERBASE, ROADBASE } from './tiles/tileValues'
 
 function Traffic(map, spriteManager) {
   this._map = map
@@ -16,7 +16,7 @@ function Traffic(map, spriteManager) {
 Traffic.prototype.makeTraffic = function (x, y, blockMaps, destFn) {
   this._stack = []
 
-  var pos = new Position(x, y)
+  const pos = new Position(x, y)
 
   if (this.findPerimeterRoad(pos)) {
     if (this.tryDrive(pos, destFn)) {
@@ -31,26 +31,26 @@ Traffic.prototype.makeTraffic = function (x, y, blockMaps, destFn) {
 }
 
 Traffic.prototype.addToTrafficDensityMap = function (blockMaps) {
-  var trafficDensityMap = blockMaps.trafficDensityMap
+  const trafficDensityMap = blockMaps.trafficDensityMap
 
   while (this._stack.length > 0) {
-    var pos = this._stack.pop()
+    const pos = this._stack.pop()
 
     // Could this happen?!?
     if (!this._map.testBounds(pos.x, pos.y)) continue
 
-    var tileValue = this._map.getTileValue(pos.x, pos.y)
+    const tileValue = this._map.getTileValue(pos.x, pos.y)
 
     if (tileValue >= ROADBASE && tileValue < POWERBASE) {
       // Update traffic density.
-      var traffic = trafficDensityMap.worldGet(pos.x, pos.y)
+      let traffic = trafficDensityMap.worldGet(pos.x, pos.y)
       traffic += 50
       traffic = Math.min(traffic, 240)
       trafficDensityMap.worldSet(pos.x, pos.y, traffic)
 
       // Attract traffic copter to the traffic
       if (traffic >= 240 && Random.getRandom(5) === 0) {
-        var sprite = this._spriteManager.getSprite(SPRITE_HELICOPTER)
+        const sprite = this._spriteManager.getSprite(SPRITE_HELICOPTER)
         if (sprite !== null) {
           sprite.destX = SpriteUtils.worldToPix(pos.x)
           sprite.destY = SpriteUtils.worldToPix(pos.y)
@@ -60,13 +60,13 @@ Traffic.prototype.addToTrafficDensityMap = function (blockMaps) {
   }
 }
 
-var perimX = [-1, 0, 1, 2, 2, 2, 1, 0, -1, -2, -2, -2]
-var perimY = [-2, -2, -2, -1, 0, 1, 2, 2, 2, 1, 0, -1]
+const perimX = [-1, 0, 1, 2, 2, 2, 1, 0, -1, -2, -2, -2]
+const perimY = [-2, -2, -2, -1, 0, 1, 2, 2, 2, 1, 0, -1]
 
 Traffic.prototype.findPerimeterRoad = function (pos) {
-  for (var i = 0; i < 12; i++) {
-    var xx = pos.x + perimX[i]
-    var yy = pos.y + perimY[i]
+  for (let i = 0; i < 12; i++) {
+    const xx = pos.x + perimX[i]
+    const yy = pos.y + perimY[i]
 
     if (this._map.testBounds(xx, yy)) {
       if (TileUtils.isDriveable(this._map.getTileValue(xx, yy))) {
@@ -80,15 +80,15 @@ Traffic.prototype.findPerimeterRoad = function (pos) {
   return false
 }
 
-var MAX_TRAFFIC_DISTANCE = 30
+const MAX_TRAFFIC_DISTANCE = 30
 
 Traffic.prototype.tryDrive = function (startPos, destFn) {
-  var dirLast
-  var drivePos = new Position(startPos)
+  let dirLast
+  let drivePos = new Position(startPos)
 
   /* Maximum distance to try */
-  for (var dist = 0; dist < MAX_TRAFFIC_DISTANCE; dist++) {
-    var dir = this.tryGo(drivePos, dirLast)
+  for (let dist = 0; dist < MAX_TRAFFIC_DISTANCE; dist++) {
+    const dir = this.tryGo(drivePos, dirLast)
     if (dir) {
       drivePos = Position.move(pos, dir)
       dirLast = dir.oppositeDirection()
@@ -110,15 +110,15 @@ Traffic.prototype.tryDrive = function (startPos, destFn) {
 }
 
 Traffic.prototype.tryGo = function (pos, dirLast) {
-  var directions = []
+  const directions = []
 
   // Find connections from current position.
-  var count = 0
+  let count = 0
 
   forEachCardinalDirection((dir) => {
     if (
-      dir != dirLast &&
-      TileUtils.isDriveable(this._map.getTileFromMapOrDefault(pos, dir, DIRT))
+      dir != dirLast
+      && TileUtils.isDriveable(this._map.getTileFromMapOrDefault(pos, dir, DIRT))
     ) {
       directions.push(dir)
       count++

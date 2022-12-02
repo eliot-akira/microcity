@@ -1,12 +1,12 @@
-import { ANIMBIT, POWERBIT } from './tileFlags'
+import { ANIMBIT, POWERBIT } from './tiles/tileFlags'
 import {
   FOOTBALLGAME1,
   FOOTBALLGAME2,
   FULLSTADIUM,
   STADIUM,
-} from './tileValues'
+} from './tiles/tileValues'
 
-var emptyStadiumFound = function (map, x, y, simData) {
+const emptyStadiumFound = function (map, x, y, simData) {
   simData.census.stadiumPop += 1
 
   if (map.getTile(x, y).isPowered()) {
@@ -20,9 +20,9 @@ var emptyStadiumFound = function (map, x, y, simData) {
   }
 }
 
-var fullStadiumFound = function (map, x, y, simData) {
+const fullStadiumFound = function (map, x, y, simData) {
   simData.census.stadiumPop += 1
-  var isPowered = map.getTile(x, y).isPowered()
+  const isPowered = map.getTile(x, y).isPowered()
 
   if (((simData.cityTime + x + y) & 7) === 0) {
     map.putZone(x, y, STADIUM, 4)
@@ -30,7 +30,7 @@ var fullStadiumFound = function (map, x, y, simData) {
   }
 }
 
-var Stadia = {
+const Stadia = {
   registerHandlers: function (mapScanner, repairManager) {
     mapScanner.addAction(STADIUM, emptyStadiumFound)
     mapScanner.addAction(FULLSTADIUM, fullStadiumFound)

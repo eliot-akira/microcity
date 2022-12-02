@@ -1,6 +1,6 @@
 import { Random } from './random'
-import { TileUtils } from './tileUtils'
-import { COMCLR, CZB } from './tileValues'
+import { TileUtils } from './tiles/tileUtils'
+import { COMCLR, CZB } from './tiles/tileValues'
 import { Traffic } from './traffic'
 import { ZoneUtils } from './zoneUtils'
 
@@ -9,7 +9,7 @@ import { ZoneUtils } from './zoneUtils'
 // starting at 428, population value 2/low follows at 437, and so on.
 
 // Given the centre of a commercial zone, compute it's population level (a number in the range 0-5)
-var getZonePopulation = function (map, x, y, tileValue) {
+const getZonePopulation = function (map, x, y, tileValue) {
   if (tileValue === COMCLR) return 0
 
   return (Math.floor((tileValue - CZB) / 9) % 5) + 1
@@ -17,15 +17,15 @@ var getZonePopulation = function (map, x, y, tileValue) {
 
 // Takes a map and coordinates, a population category in the range 1-5, a value category in the range 0-3, and places
 // the appropriate industrial zone on the map
-var placeCommercial = function (map, x, y, population, lpValue, zonePower) {
-  var centreTile = (lpValue * 5 + population) * 9 + CZB
+const placeCommercial = function (map, x, y, population, lpValue, zonePower) {
+  const centreTile = (lpValue * 5 + population) * 9 + CZB
   ZoneUtils.putZone(map, x, y, centreTile, zonePower)
 }
 
-var growZone = function (map, x, y, blockMaps, population, lpValue, zonePower) {
+const growZone = function (map, x, y, blockMaps, population, lpValue, zonePower) {
   // landValueMap contains values in the range 0-250, representing the desirability of the land.
   // Thus, after shifting, landValue will be in the range 0-7.
-  var landValue = blockMaps.landValueMap.worldGet(x, y)
+  let landValue = blockMaps.landValueMap.worldGet(x, y)
   landValue = landValue >> 5
 
   if (population > landValue) return
@@ -37,7 +37,7 @@ var growZone = function (map, x, y, blockMaps, population, lpValue, zonePower) {
   }
 }
 
-var degradeZone = function (
+const degradeZone = function (
   map,
   x,
   y,
@@ -58,25 +58,25 @@ var degradeZone = function (
 }
 
 // Called by the map scanner when it finds the centre of an commercial zone
-var commercialFound = function (map, x, y, simData) {
+const commercialFound = function (map, x, y, simData) {
   // lpValue will be filled if we actually decide to trigger growth/decay. It will be an index of the land/pollution
   // value in the range 0-3
-  var lpValue
+  let lpValue
 
   // Notify the census
   simData.census.comZonePop += 1
 
   // Calculate the population level for this tile, and add to census
-  var tileValue = map.getTileValue(x, y)
-  var population = getZonePopulation(map, x, y, tileValue)
+  const tileValue = map.getTileValue(x, y)
+  const population = getZonePopulation(map, x, y, tileValue)
   simData.census.comPop += population
 
-  var zonePower = map.getTile(x, y).isPowered()
+  const zonePower = map.getTile(x, y).isPowered()
 
   // Occasionally check to see if the zone is connected to the transport network (the chance of this happening
   // increases as the population increases). Growth naturally stalls if consumers cannot reach the shops.
   // Note in particular, we will never take this branch if the zone is empty.
-  var trafficOK = Traffic.ROUTE_FOUND
+  let trafficOK = Traffic.ROUTE_FOUND
   if (population > Random.getRandom(5)) {
     // Try to find a route from here to an industrial zone
     trafficOK = simData.trafficManager.makeTraffic(
@@ -96,11 +96,11 @@ var commercialFound = function (map, x, y, simData) {
 
   // Occasionally assess and perhaps modify the tile
   if (Random.getChance(7)) {
-    var locationScore =
+    const locationScore =
       trafficOK === Traffic.NO_ROAD_FOUND
         ? -3000
         : simData.blockMaps.cityCentreDistScoreMap.worldGet(x, y)
-    var zoneScore = simData.valves.comValve + locationScore
+    let zoneScore = simData.valves.comValve + locationScore
 
     // Unpowered zones should of course be penalized
     if (!zonePower) zoneScore = -500
@@ -118,9 +118,9 @@ var commercialFound = function (map, x, y, simData) {
     // This has the nice effect of not preventing an individual unit from growing even if overall demand has collapsed
     // (the business itself might still be growing.
     if (
-      zonePower &&
-      zoneScore > -350 &&
-      zoneScore - 26380 > Random.getRandom16Signed()
+      zonePower
+      && zoneScore > -350
+      && zoneScore - 26380 > Random.getRandom16Signed()
     ) {
       lpValue = ZoneUtils.getLandPollutionValue(simData.blockMaps, x, y)
       growZone(map, x, y, simData.blockMaps, population, lpValue, zonePower)
@@ -138,11 +138,11 @@ var commercialFound = function (map, x, y, simData) {
   }
 }
 
-var Commercial = {
+const Commercial = {
   registerHandlers: function (mapScanner, repairManager) {
     mapScanner.addAction(TileUtils.isCommercialZone, commercialFound)
   },
-  getZonePopulation: getZonePopulation,
+  getZonePopulation,
 }
 
 export { Commercial }

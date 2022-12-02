@@ -12,7 +12,9 @@
     "simcity",
     "idle games"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "preact": "^10.11.3"
+  },
   "devDependencies": {
     "@tangible/roller": "1.x"
   }

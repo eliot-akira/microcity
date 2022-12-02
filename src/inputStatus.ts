@@ -1,11 +1,14 @@
 import { EventEmitter } from './eventEmitter'
 import { GameCanvas } from './gameCanvas'
-import { GameTools } from './gameTools'
+import { GameTools } from './tools/gameTools'
 import * as Messages from './messages'
-import { MiscUtils } from './miscUtils'
+import { MiscUtils } from './utils'
 
-var InputStatus = EventEmitter(function (map, tileWidth) {
-  this.gameTools = new GameTools(map)
+const canvasID = '#' + GameCanvas.DEFAULT_ID
+const toolOutputID = '#toolOutput'
+
+const InputStatus = EventEmitter(function (map, tileWidth) {
+  this.gameTools = GameTools(map)
 
   this.gameTools.addEventListener(
     Messages.QUERY_WINDOW_NEEDED,
@@ -62,11 +65,8 @@ var InputStatus = EventEmitter(function (map, tileWidth) {
   $('#debugRequest').click(debugHandler.bind(this))
 })
 
-var canvasID = '#' + GameCanvas.DEFAULT_ID
-var toolOutputID = '#toolOutput'
-
-var keyDownHandler = function (e) {
-  var handled = false
+function keyDownHandler(e) {
+  let handled = false
 
   switch (e.keyCode) {
     case 38:
@@ -101,7 +101,7 @@ var keyDownHandler = function (e) {
   if (handled) e.preventDefault()
 }
 
-var keyUpHandler = function (e) {
+function keyUpHandler(e) {
   switch (e.keyCode) {
     case 38:
     case 87:
@@ -128,25 +128,23 @@ var keyUpHandler = function (e) {
   }
 }
 
-var getRelativeCoordinates = function (e) {
-  var cRect = document.querySelector(this.canvasID).getBoundingClientRect()
+function getRelativeCoordinates(e) {
+  const cRect = document.querySelector(this.canvasID).getBoundingClientRect()
   return { x: e.clientX - cRect.left, y: e.clientY - cRect.top }
 }
 
-var mouseEnterHandler = function (e) {
+function mouseEnterHandler(e) {
   if (this.currentTool === null) return
 
   $(this.canvasID).on('mousemove', this.mouseMoveHandler)
 
-  if (this.currentTool.isDraggable)
-    $(this.canvasID).on('mousedown', this.mouseDownHandler)
-  else $(this.canvasID).on('click', this.canvasClickHandler)
+  if (this.currentTool.isDraggable) { $(this.canvasID).on('mousedown', this.mouseDownHandler) } else $(this.canvasID).on('click', this.canvasClickHandler)
 }
 
-var mouseDownHandler = function (e) {
+function mouseDownHandler(e) {
   if (e.which !== 1 || e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return
 
-  var coords = this.getRelativeCoordinates(e)
+  const coords = this.getRelativeCoordinates(e)
   this.mouseX = coords.x
   this.mouseY = coords.y
 
@@ -160,7 +158,7 @@ var mouseDownHandler = function (e) {
   e.preventDefault()
 }
 
-var mouseUpHandler = function (e) {
+function mouseUpHandler(e) {
   this._dragging = false
   this._lastDragX = -1
   this._lastDragY = -1
@@ -168,7 +166,7 @@ var mouseUpHandler = function (e) {
   e.preventDefault()
 }
 
-var mouseLeaveHandler = function (e) {
+function mouseLeaveHandler(e) {
   $(this.canvasID).off('mousedown')
   $(this.canvasID).off('mousemove')
   $(this.canvasID).off('mouseup')
@@ -186,19 +184,19 @@ var mouseLeaveHandler = function (e) {
   this.mouseY = -1
 }
 
-var mouseMoveHandler = function (e) {
-  var coords = this.getRelativeCoordinates(e)
+function mouseMoveHandler(e) {
+  const coords = this.getRelativeCoordinates(e)
   this.mouseX = coords.x
   this.mouseY = coords.y
 
   if (this._dragging) {
     // XXX Work up how to patch up the path for fast mouse moves. My first attempt was too slow, and ended up missing
     // mouseUp events
-    var x = Math.floor(this.mouseX / this._tileWidth)
-    var y = Math.floor(this.mouseY / this._tileWidth)
+    const x = Math.floor(this.mouseX / this._tileWidth)
+    const y = Math.floor(this.mouseY / this._tileWidth)
 
-    var lastX = this._lastDragX
-    var lastY = this._lastDragY
+    const lastX = this._lastDragX
+    const lastY = this._lastDragY
     if (x !== lastX || y !== lastY) {
       this._emitEvent(Messages.TOOL_CLICKED, { x: this.mouseX, y: this.mouseY })
       this._lastDragX = x
@@ -207,24 +205,23 @@ var mouseMoveHandler = function (e) {
   }
 }
 
-var canvasClickHandler = function (e) {
+function canvasClickHandler(e) {
   if (
-    e.which !== 1 ||
-    e.shiftKey ||
-    e.altKey ||
-    e.ctrlKey ||
-    e.metaKey ||
-    this.mouseX === -1 ||
-    this._mouseY === -1 ||
-    this._dragging
-  )
-    return
+    e.which !== 1
+    || e.shiftKey
+    || e.altKey
+    || e.ctrlKey
+    || e.metaKey
+    || this.mouseX === -1
+    || this._mouseY === -1
+    || this._dragging
+  ) { return }
 
   this._emitEvent(Messages.TOOL_CLICKED, { x: this.mouseX, y: this.mouseY })
   e.preventDefault()
 }
 
-var toolButtonHandler = function (e) {
+function toolButtonHandler(e) {
   // Remove highlight from last tool button
   $('.selected').each(function () {
     $(this).removeClass('selected')
@@ -255,8 +252,8 @@ var toolButtonHandler = function (e) {
 }
 
 InputStatus.prototype.speedChangeHandler = function (e) {
-  var requestedSpeed = $('#pauseRequest').text()
-  var newRequest = requestedSpeed === 'Pause' ? 'Play' : 'Pause'
+  const requestedSpeed = $('#pauseRequest').text()
+  const newRequest = requestedSpeed === 'Pause' ? 'Play' : 'Pause'
   $('#pauseRequest').text(newRequest)
   this._emitEvent(Messages.SPEED_CHANGE, requestedSpeed)
 }
@@ -273,8 +270,8 @@ InputStatus.prototype.clearTool = function () {
   $('.selected').removeClass('selected')
 }
 
-var makeHandler = function (message) {
-  var m = Messages[message]
+const makeHandler = function (message) {
+  const m = Messages[message]
 
   return function (e) {
     this._emitEvent(m)

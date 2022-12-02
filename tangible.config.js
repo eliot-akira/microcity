@@ -2,7 +2,8 @@ const config = {
   build: [
     {
       src: 'src/index.ts',
-      dest: 'docs/index.min.js'
+      dest: 'docs/index.min.js',
+      react: 'preact'
     },
     {
       src: 'src/index.scss',

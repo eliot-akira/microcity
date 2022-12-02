@@ -1,42 +1,44 @@
-import { BaseTool } from './baseTool'
-import { BudgetWindow } from './budgetWindow'
+import { BaseTool } from './tools/baseTool'
+import { BudgetWindow } from './windows/budgetWindow'
 import { Config } from './config'
-import { CongratsWindow } from './congratsWindow'
-import { DebugWindow } from './debugWindow'
-import { DisasterWindow } from './disasterWindow'
-import { EvaluationWindow } from './evaluationWindow'
+import { CongratsWindow } from './windows/congratsWindow'
+import { DebugWindow } from './windows/debugWindow'
+import { DisasterWindow } from './windows/disasterWindow'
+import { EvaluationWindow } from './windows/evaluationWindow'
 import { GameCanvas } from './gameCanvas'
-import { GameMap } from './gameMap'
+import { GameMap } from './map/gameMap'
 import { InfoBar } from './infoBar'
 import { InputStatus } from './inputStatus'
 import * as Messages from './messages'
 import { MonsterTV } from './monsterTV'
 // import { NagWindow } from './nagWindow'
 import { Notification } from './notification'
-import { QueryWindow } from './queryWindow'
+import { QueryWindow } from './windows/queryWindow'
 import { Random } from './random'
 import { RCI } from './rci'
-import { SaveWindow } from './saveWindow'
-import { ScreenshotLinkWindow } from './screenshotLinkWindow'
-import { ScreenshotWindow } from './screenshotWindow'
-import { SettingsWindow } from './settingsWindow'
+import { SaveWindow } from './windows/saveWindow'
+import { ScreenshotLinkWindow } from './windows/screenshotLinkWindow'
+import { ScreenshotWindow } from './windows/screenshotWindow'
+import { SettingsWindow } from './windows/settingsWindow'
 import { Simulation } from './simulation'
 import { Storage } from './storage'
-import { Text } from './text'
-import { TouchWarnWindow } from './touchWarnWindow'
+import { Text } from './messages/text'
+import { TouchWarnWindow } from './windows/touchWarnWindow'
 
-var disasterTimeout = 20 * 1000
+const disasterTimeout = 20 * 1000
 
 function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
+
   difficulty = difficulty || 0
-  var savedGame
+
+  let savedGame
 
   if (!gameMap.isSavedGame) {
     this.gameMap = gameMap
     savedGame = null
   } else {
-    // Saved game - TODO: Save and restore width and height
-    this.gameMap = new GameMap(240, 240) // 120, 100
+    // Saved game
+    this.gameMap = new GameMap(gameMap.width || 120, gameMap.height || 100) // 240, 240
     savedGame = gameMap
   }
 
@@ -73,7 +75,7 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
   this.isPaused = false
   this.lastBadMessageTime = null
 
-  var self = this
+  const self = this
 
   // if (!this.everClicked) {
 
@@ -104,7 +106,7 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
     this.gameCanvas.animationManager
   )
 
-  var opacityLayerID = 'opaque'
+  const opacityLayerID = 'opaque'
 
   this.genericDialogClosure = genericDialogClosure.bind(this)
 
@@ -130,7 +132,7 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
   this.handleBudgetRequest = makeWindowOpenHandler(
     'budget',
     function () {
-      var budgetData = {
+      const budgetData = {
         roadMaintenanceBudget: this.simulation.budget.roadMaintenanceBudget,
         roadRate: Math.floor(this.simulation.budget.roadPercent * 100),
         fireMaintenanceBudget: this.simulation.budget.fireMaintenanceBudget,
@@ -290,7 +292,7 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
 
   // And date changes
   // XXX Not yet activated
-  //this.simulation.addEventListener(Messages.DATE_UPDATED, this.onDateChange.bind(this));
+  // this.simulation.addEventListener(Messages.DATE_UPDATED, this.onDateChange.bind(this));
 
   this.infoBar = InfoBar(
     'cclass',
@@ -300,7 +302,7 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
     'date',
     'name'
   )
-  var initialValues = {
+  const initialValues = {
     classification: this.simulation.evaluation.cityClass,
     population: this.simulation.evaluation.cityPop,
     score: this.simulation.evaluation.cityScore,
@@ -323,11 +325,13 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
     this._reachedMetropolis =
     this._reacedMegalopolis =
       false
-  this.congratsWindow = new CongratsWindow(opacityLayerID, 'congratsWindow')
-  this.congratsWindow.addEventListener(
-    Messages.CONGRATS_WINDOW_CLOSED,
-    this.genericDialogClosure
-  )
+
+
+  // this.congratsWindow = new CongratsWindow(opacityLayerID, 'congratsWindow')
+  // this.congratsWindow.addEventListener(
+  //   Messages.CONGRATS_WINDOW_CLOSED,
+  //   this.genericDialogClosure
+  // )
 
   // Listen for touches, so we can warn tablet users
   // this.touchListener = touchListener.bind(this)
@@ -343,7 +347,7 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
   this.tick()
 
   // Paint the map
-  var debug = Config.debug || Config.gameDebug
+  const debug = Config.debug || Config.gameDebug
   if (debug) {
     $('#debug').toggle()
     this.frameCount = 0
@@ -357,7 +361,7 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
 }
 
 Game.prototype.save = function () {
-  var saveData = { name: this.name, everClicked: this.everClicked }
+  const saveData = { name: this.name, everClicked: this.everClicked }
   BaseTool.save(saveData)
   this.simulation.save(saveData)
 
@@ -373,23 +377,22 @@ Game.prototype.load = function (saveData) {
   this.simulation.load(saveData)
 }
 
-var nextFrame =
-  window.requestAnimationFrame ||
-  window.mozRequestAnimationFrame ||
-  window.webkitRequestAnimationFrame
+const nextFrame =
+  window.requestAnimationFrame
+  || window.mozRequestAnimationFrame
+  || window.webkitRequestAnimationFrame
 
 Game.prototype.revealControls = function () {
+
   $('.initialHidden').each(function (e) {
     $(this).removeClass('initialHidden')
   })
-
-  console.log('game.revealControls')
 
   // this._notificationBar.news({ subject: Messages.WELCOME })
   this.rci.update({ residential: 750, commercial: 750, industrial: 750 })
 }
 
-var genericDialogClosure = function () {
+function genericDialogClosure() {
   this.dialogOpen = false
   this._openWindow = null
 }
@@ -434,8 +437,8 @@ Game.prototype.handleDisasterWindowClosure = function (request) {
 Game.prototype.handleSettingsWindowClosure = function (actions) {
   this.dialogOpen = false
 
-  for (var i = 0, l = actions.length; i < l; i++) {
-    var a = actions[i]
+  for (let i = 0, l = actions.length; i < l; i++) {
+    const a = actions[i]
 
     switch (a.action) {
       case SettingsWindow.AUTOBUDGET:
@@ -464,8 +467,8 @@ Game.prototype.handleSettingsWindowClosure = function (actions) {
 Game.prototype.handleDebugWindowClosure = function (actions) {
   this.dialogOpen = false
 
-  for (var i = 0, l = actions.length; i < l; i++) {
-    var a = actions[i]
+  for (let i = 0, l = actions.length; i < l; i++) {
+    const a = actions[i]
 
     switch (a.action) {
       case DebugWindow.ADD_FUNDS:
@@ -483,11 +486,8 @@ Game.prototype.handleScreenshotWindowClosure = function (action) {
 
   if (action === null) return
 
-  var dataURI
-  if (action === ScreenshotWindow.SCREENSHOT_VISIBLE)
-    dataURI = this.gameCanvas.screenshotVisible()
-  else if (action === ScreenshotWindow.SCREENSHOT_ALL)
-    dataURI = this.gameCanvas.screenshotMap()
+  let dataURI
+  if (action === ScreenshotWindow.SCREENSHOT_VISIBLE) { dataURI = this.gameCanvas.screenshotVisible() } else if (action === ScreenshotWindow.SCREENSHOT_ALL) { dataURI = this.gameCanvas.screenshotMap() }
 
   this.dialogOpen = true
   this._openWindow = 'screenshotLinkWindow'
@@ -511,7 +511,7 @@ Game.prototype.handleBudgetWindowClosure = function (data) {
   }
 }
 
-var makeWindowOpenHandler = function (winName, customFn) {
+function makeWindowOpenHandler(winName, customFn) {
   customFn = customFn || null
 
   return function () {
@@ -524,8 +524,8 @@ var makeWindowOpenHandler = function (winName, customFn) {
 
     this.dialogOpen = true
     this._openWindow = winName + 'Window'
-    var win = winName + 'Window'
-    var data = []
+    const win = winName + 'Window'
+    let data = []
 
     if (customFn) data = customFn()
 
@@ -544,18 +544,18 @@ Game.prototype.handleMandatoryBudget = function () {
 }
 
 Game.prototype.handleTool = function (data) {
-  var x = data.x
-  var y = data.y
+  const x = data.x
+  const y = data.y
 
   // Were was the tool clicked?
-  var tileCoords = this.gameCanvas.canvasCoordinateToTileCoordinate(x, y)
+  const tileCoords = this.gameCanvas.canvasCoordinateToTileCoordinate(x, y)
 
   if (tileCoords === null) return
 
-  var tool = this.inputStatus.currentTool
+  const tool = this.inputStatus.currentTool
 
-  var budget = this.simulation.budget
-  var evaluation = this.simulation.evaluation
+  const budget = this.simulation.budget
+  const evaluation = this.simulation.evaluation
 
   // do it!
   tool.doTool(tileCoords.x, tileCoords.y, this.simulation.blockMaps)
@@ -616,7 +616,7 @@ Game.prototype.handleInput = function () {
 }
 
 // Will be bound on construction
-var touchListener = function (e) {
+const touchListener = function (e) {
   window.removeEventListener('touchstart', this.touchListener, false)
   this._openWindow = 'touchWindow'
   this.dialogOpen = true
@@ -624,11 +624,12 @@ var touchListener = function (e) {
 }
 
 Game.prototype.processFrontEndMessage = function (message) {
-  var subject = message.subject
-  var d = new Date()
+  const subject = message.subject
+  const d = new Date()
 
   if (Text.goodMessages[subject] !== undefined) {
-    var cMessage = this.name + ' is now a '
+
+    let cMessage = this.name + ' is now a '
 
     switch (subject) {
       case Messages.REACHED_CAPITAL:
@@ -668,17 +669,19 @@ Game.prototype.processFrontEndMessage = function (message) {
     }
 
     if (
-      this.lastBadMessageTime === null ||
-      d - this.lastBadMessageTime > disasterTimeout
+      this.lastBadMessageTime === null
+      || d - this.lastBadMessageTime > disasterTimeout
     ) {
       this.lastBadMessageTime = null
       this._notificationBar.goodNews(message)
+      // ./text.ts, messageText[Messages.REACHED_CITY] = 'Population has reached
     }
 
     if (cMessage !== this.name + ' is now a ') {
-      this.dialogOpen = true
-      this._openWindow = 'congratsWindow'
-      this.congratsWindow.open(cMessage)
+      console.log('Congratulations', cMessage)
+      //   this.dialogOpen = true
+    //   this._openWindow = 'congratsWindow'
+    //   this.congratsWindow.open(cMessage)
     }
 
     return
@@ -686,23 +689,20 @@ Game.prototype.processFrontEndMessage = function (message) {
 
   // Show disaster if applicable
   if (message.data) {
-    if (message.data.showable)
-      this.monsterTV.show(message.data.x, message.data.y)
-    else if (message.data.trackable)
-      this.monsterTV.track(message.data.x, message.data.y, message.data.sprite)
+    if (message.data.showable) { this.monsterTV.show(message.data.x, message.data.y) } else if (message.data.trackable) { this.monsterTV.track(message.data.x, message.data.y, message.data.sprite) }
   }
 
   if (Text.badMessages[subject] !== undefined) {
+
     this._notificationBar.badNews(message)
-    if (Messages.DISASTER_MESSAGES.indexOf(message.subject) !== -1)
-      this.lastBadMessageTime = d
+    if (Messages.DISASTER_MESSAGES.indexOf(message.subject) !== -1) { this.lastBadMessageTime = d }
     return
   }
 
   if (Text.neutralMessages[subject] !== undefined) {
     if (
-      this.lastBadMessageTime === null ||
-      d - this.lastBadMessageTime > disasterTimeout
+      this.lastBadMessageTime === null
+      || d - this.lastBadMessageTime > disasterTimeout
     ) {
       this.lastBadMessageTime = null
       this._notificationBar.news(message)
@@ -716,10 +716,10 @@ Game.prototype.processFrontEndMessage = function (message) {
 Game.prototype.calculateMouseForPaint = function () {
   // Determine whether we need to draw a tool outline in the
   // canvas
-  var mouse = null
+  let mouse = null
 
   if (this.inputStatus.mouseX !== -1 && this.inputStatus.toolWidth > 0) {
-    var tileCoords = this.gameCanvas.canvasCoordinateToTileOffset(
+    const tileCoords = this.gameCanvas.canvasCoordinateToTileOffset(
       this.inputStatus.mouseX,
       this.inputStatus.mouseY
     )
@@ -741,8 +741,8 @@ Game.prototype.calculateMouseForPaint = function () {
 }
 
 Game.prototype.calculateSpritesForPaint = function (canvas) {
-  var origin = canvas.getTileOrigin()
-  var spriteList = this.simulation.spriteManager.getSpritesInView(
+  const origin = canvas.getTileOrigin()
+  const spriteList = this.simulation.spriteManager.getSpritesInView(
     origin.x,
     origin.y,
     canvas.canvasWidth,
@@ -779,12 +779,13 @@ var commonAnimate = function () {
     return
   }
 
-  if (!this.isPaused)
+  if (!this.isPaused) {
     this.simulation.spriteManager.moveObjects(
       this.simulation._constructSimData()
     )
+  }
 
-  var sprites = this.calculateSpritesForPaint(this.gameCanvas)
+  let sprites = this.calculateSpritesForPaint(this.gameCanvas)
   this.gameCanvas.paint(this.mouse, sprites, this.isPaused)
 
   sprites = this.calculateSpritesForPaint(this.monsterTV.canvas)
@@ -794,8 +795,8 @@ var commonAnimate = function () {
 }
 
 var debugAnimate = function () {
-  var date = new Date()
-  var elapsed = Math.floor((date - this.animStart) / 1000)
+  const date = new Date()
+  const elapsed = Math.floor((date - this.animStart) / 1000)
 
   if (elapsed > this.lastElapsed && this.frameCount > 0) {
     $('#fpsValue').text(Math.floor(this.frameCount / elapsed))

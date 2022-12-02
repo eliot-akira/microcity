@@ -8,6 +8,58 @@ body {
   background-image: url('../docs/images/dirtbg.png');
 }
 
+@font-face {
+  font-family: 'pixels';
+  src: url('./fonts/nfpixels-regular-webfont.woff2') format('woff2'),
+       url('./fonts/nfpixels-regular-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+.font-pixels {
+  font-family: 'pixels';
+  font-size: 16px;
+}
+
+
+// TODO: Rename this control panel
+#infobar {
+  position: absolute;
+  top: 0;
+  // height: 150px;
+
+  height: 100vh;
+  // background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(0, 0, 0, .3);
+  // background-color: #c7c7c7;
+  // background-color: #343434;
+  &, button, input, select {
+    // color: black;
+    color: white;
+  }
+
+
+// Notifications
+
+.good {
+  background-color: LightGreen;
+  color: black;
+}
+
+
+.bad {
+  background-color: red;
+  color: yellow;
+}
+
+.neutral {
+  background-color: #000;
+  color: white;
+}
+
+
+}
+
+
 button,
 input[type='submit'] {
   width: 140px;
@@ -15,7 +67,11 @@ input[type='submit'] {
   border-radius: 3px;
   cursor: pointer;
   border: none;
-  font-family: sans-serif;
+}
+
+button, input, select {
+  font-family: inherit;
+  font-size: inherit;
 }
 
 footer {
@@ -27,21 +83,23 @@ footer {
   background-color: darkslategray;
 }
 
+
 header {
+  color: white;
   background-color: darkslategray;
-  background-image: repeating-linear-gradient(
-    -45deg,
-    transparent,
-    transparent 35px,
-    rgba(255, 255, 255, 0.2) 35px,
-    rgba(255, 255, 255, 0.2) 70px
-  );
-  // font-family: 'Chunk', serif;
-  height: 35px;
+  // background-image: repeating-linear-gradient(
+  //   -45deg,
+  //   transparent,
+  //   transparent 35px,
+  //   rgba(255, 255, 255, 0.2) 35px,
+  //   rgba(255, 255, 255, 0.2) 70px
+  // );
+  // // font-family: 'Chunk', serif;
+  // height: 35px;
 }
 
 header h1 {
-  margin-left: 50px;
+  // margin-left: 50px;
 }
 
 main {
@@ -51,7 +109,7 @@ main {
   width: 100%;
   overflow: hidden;
 
-  font-size: 14px;
+  // font-size: 14px;
 }
 
 nav a,
@@ -92,10 +150,6 @@ nav li {
   display: none;
 }
 
-.bad {
-  background-color: red;
-  color: yellow;
-}
 
 .block {
   display: block;
@@ -150,12 +204,7 @@ nav li {
 }
 
 .fontlarge {
-  font-size: 36px;
-}
-
-.good {
-  background-color: LightGreen;
-  color: black;
+  // font-size: 36px;
 }
 
 .helpPointer {
@@ -206,7 +255,7 @@ nav li {
 }
 
 .modal header {
-  height: 18px;
+  // height: 18px;
 }
 
 .mintcream,
@@ -219,12 +268,12 @@ nav li {
 }
 
 .open {
-  font-family: 'Open Sans', sans-serif;
+  // font-family: 'Open Sans', sans-serif;
 }
 
 .opinion,
 .statistics {
-  font-size: 12px;
+  // font-size: 12px;
 }
 
 .opinionList dd {
@@ -297,17 +346,19 @@ nav li {
   margin-left: 5px;
   margin-right: 5px;
 
-  color: black;
-  background-color: rgba(255, 255, 255, 0.5); // white;
+  // color: black;
+  // background-color: rgba(255, 255, 255, 0.5); // white;
+  background-color: transparent;
 
   // font-size: 12px;
   display: inline-block;
 }
 
 .miscButton {
-  color: black;
-  background-color: rgba(255, 255, 255, 0.5);
+  // color: black;
+  // background-color: rgba(255, 255, 255, 0.5);
   // font-size: 12px;
+  background-color: transparent;
 }
 
 .unselected {
@@ -370,7 +421,7 @@ nav li {
 }
 
 #evalContainer {
-  font-size: 14px;
+  // font-size: 14px;
 }
 
 #flagsTable {
@@ -385,14 +436,7 @@ nav li {
   padding: 0 5px;
 }
 
-#infobar {
-  position: absolute;
-  top: 0;
-  height: 150px;
-}
-#infobar > .inner {
-  background-color: rgba(255, 255, 255, 0.5);
-}
+
 #controls {
   position: absolute;
   top: 180px;
@@ -401,7 +445,7 @@ nav li {
 }
 
 #miscButtons {
-  display: none;
+  // display: none;
   position: absolute;
   top: 500px; // 250px
   height: 162px;
@@ -433,7 +477,7 @@ nav li {
 }
 
 #nameForm {
-  font-size: 18px;
+  // font-size: 18px;
   width: 150px;
 }
 
@@ -462,7 +506,7 @@ nav li {
 #playit {
   background-color: green;
   color: white;
-  font-size: 18px;
+  // font-size: 18px;
   height: 24px;
 }
 
@@ -514,7 +558,7 @@ nav li {
 #start {
   display: none;
   text-align: center;
-  font-size: 18px;
+  // font-size: 18px;
 }
 
 #statisticsList,
@@ -905,7 +949,7 @@ nav li {
 
 #appeal {
   border: 1px dotted grey;
-  font-size: 12px;
+  // font-size: 12px;
   width: 50%;
   margin: auto;
   line-height: 1.5em;

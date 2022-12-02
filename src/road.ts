@@ -1,10 +1,10 @@
 import { Random } from './random'
-import { Tile } from './tile'
-import { ANIMBIT, BIT_MASK, BULLBIT } from './tileFlags'
-import * as TileValues from './tileValues'
-import { TileUtils } from './tileUtils'
+import { Tile } from './tiles/tile'
+import { ANIMBIT, BIT_MASK, BULLBIT } from './tiles/tileFlags'
+import * as TileValues from './tiles/tileValues'
+import { TileUtils } from './tiles/tileUtils'
 
-var openBridge = function (
+const openBridge = function (
   map,
   origX,
   origY,
@@ -13,18 +13,17 @@ var openBridge = function (
   oldTiles,
   newTiles
 ) {
-  for (var i = 0; i < 7; i++) {
-    var x = origX + xDelta[i]
-    var y = origY + yDelta[i]
+  for (let i = 0; i < 7; i++) {
+    const x = origX + xDelta[i]
+    const y = origY + yDelta[i]
 
     if (map.testBounds(x, y)) {
-      if (map.getTileValue(x, y) === (oldTiles[i] & BIT_MASK))
-        map.setTileValue(x, y, newTiles[i])
+      if (map.getTileValue(x, y) === (oldTiles[i] & BIT_MASK)) { map.setTileValue(x, y, newTiles[i]) }
     }
   }
 }
 
-var closeBridge = function (
+const closeBridge = function (
   map,
   origX,
   origY,
@@ -33,24 +32,23 @@ var closeBridge = function (
   oldTiles,
   newTiles
 ) {
-  for (var i = 0; i < 7; i++) {
-    var x = origX + xDelta[i]
-    var y = origY + yDelta[i]
+  for (let i = 0; i < 7; i++) {
+    const x = origX + xDelta[i]
+    const y = origY + yDelta[i]
 
     if (map.testBounds(x, y)) {
-      var tileValue = map.getTileValue(x, y)
+      const tileValue = map.getTileValue(x, y)
       if (
-        tileValue === TileValues.CHANNEL ||
-        (tileValue & 15) === (oldTiles[i] & 15)
-      )
-        map.setTileValue(x, y, newTiles[i])
+        tileValue === TileValues.CHANNEL
+        || (tileValue & 15) === (oldTiles[i] & 15)
+      ) { map.setTileValue(x, y, newTiles[i]) }
     }
   }
 }
 
-var verticalDeltaX = [0, 1, 0, 0, 0, 0, 1]
-var verticalDeltaY = [-2, -2, -1, 0, 1, 2, 2]
-var openVertical = [
+const verticalDeltaX = [0, 1, 0, 0, 0, 0, 1]
+const verticalDeltaY = [-2, -2, -1, 0, 1, 2, 2]
+const openVertical = [
   TileValues.VBRDG0 | BULLBIT,
   TileValues.VBRDG1 | BULLBIT,
   TileValues.RIVER,
@@ -59,7 +57,7 @@ var openVertical = [
   TileValues.VBRDG2 | BULLBIT,
   TileValues.VBRDG3 | BULLBIT,
 ]
-var closeVertical = [
+const closeVertical = [
   TileValues.VBRIDGE | BULLBIT,
   TileValues.RIVER,
   TileValues.VBRIDGE | BULLBIT,
@@ -68,9 +66,9 @@ var closeVertical = [
   TileValues.VBRIDGE | BULLBIT,
   TileValues.RIVER,
 ]
-var horizontalDeltaX = [-2, 2, -2, -1, 0, 1, 2]
-var horizontalDeltaY = [-1, -1, 0, 0, 0, 0, 0]
-var openHorizontal = [
+const horizontalDeltaX = [-2, 2, -2, -1, 0, 1, 2]
+const horizontalDeltaY = [-1, -1, 0, 0, 0, 0, 0]
+const openHorizontal = [
   TileValues.HBRDG1 | BULLBIT,
   TileValues.HBRDG3 | BULLBIT,
   TileValues.HBRDG0 | BULLBIT,
@@ -79,7 +77,7 @@ var openHorizontal = [
   TileValues.RIVER,
   TileValues.HBRDG2 | BULLBIT,
 ]
-var closeHorizontal = [
+const closeHorizontal = [
   TileValues.RIVER,
   TileValues.RIVER,
   TileValues.HBRIDGE | BULLBIT,
@@ -89,13 +87,13 @@ var closeHorizontal = [
   TileValues.HBRIDGE | BULLBIT,
 ]
 
-var doBridge = function (map, x, y, currentTile, simData) {
+const doBridge = function (map, x, y, currentTile, simData) {
   if (currentTile === TileValues.BRWV) {
     // We have an open vertical bridge. Possibly close it.
     if (
-      Random.getChance(3) &&
-      simData.spriteManager.getBoatDistance(x, y) > 340
-    )
+      Random.getChance(3)
+      && simData.spriteManager.getBoatDistance(x, y) > 340
+    ) {
       closeBridge(
         map,
         x,
@@ -105,6 +103,7 @@ var doBridge = function (map, x, y, currentTile, simData) {
         openVertical,
         closeVertical
       )
+    }
 
     return true
   }
@@ -112,9 +111,9 @@ var doBridge = function (map, x, y, currentTile, simData) {
   if (currentTile == TileValues.BRWH) {
     // We have an open horizontal bridge. Possibly close it.
     if (
-      Random.getChance(3) &&
-      simData.spriteManager.getBoatDistance(x, y) > 340
-    )
+      Random.getChance(3)
+      && simData.spriteManager.getBoatDistance(x, y) > 340
+    ) {
       closeBridge(
         map,
         x,
@@ -124,13 +123,14 @@ var doBridge = function (map, x, y, currentTile, simData) {
         openHorizontal,
         closeHorizontal
       )
+    }
 
     return true
   }
 
   if (
-    simData.spriteManager.getBoatDistance(x, y) < 300 ||
-    Random.getChance(7)
+    simData.spriteManager.getBoatDistance(x, y) < 300
+    || Random.getChance(7)
   ) {
     if (currentTile & 1) {
       if (x < map.width - 1) {
@@ -171,17 +171,17 @@ var doBridge = function (map, x, y, currentTile, simData) {
   return false
 }
 
-var densityTable = [
+const densityTable = [
   TileValues.ROADBASE,
   TileValues.LTRFBASE,
   TileValues.HTRFBASE,
 ]
 
-var roadFound = function (map, x, y, simData) {
+const roadFound = function (map, x, y, simData) {
   simData.census.roadTotal += 1
 
-  var currentTile = map.getTile(x, y)
-  var tileValue = currentTile.getValue()
+  let currentTile = map.getTile(x, y)
+  const tileValue = currentTile.getValue()
 
   if (simData.budget.shouldDegradeRoad()) {
     if (Random.getChance(511)) {
@@ -190,12 +190,10 @@ var roadFound = function (map, x, y, simData) {
       // Don't degrade tiles with power lines
       if (!currentTile.isConductive()) {
         if (simData.budget.roadEffect < (Random.getRandom16() & 31)) {
-          var mapValue = currentTile.getValue()
+          const mapValue = currentTile.getValue()
 
           // Replace bridge tiles with water, otherwise rubble
-          if ((tileValue & 15) < 2 || (tileValue & 15) === 15)
-            map.setTile(x, y, TileValues.RIVER, 0)
-          else map.setTo(x, y, TileUtils.randomRubble())
+          if ((tileValue & 15) < 2 || (tileValue & 15) === 15) { map.setTile(x, y, TileValues.RIVER, 0) } else map.setTo(x, y, TileUtils.randomRubble())
 
           return
         }
@@ -213,7 +211,7 @@ var roadFound = function (map, x, y, simData) {
 
   // Examine traffic density, and modify tile to represent last scanned traffic
   // density
-  var density = 0
+  let density = 0
   if (tileValue < TileValues.LTRFBASE) {
     density = 0
   } else if (tileValue < TileValues.HTRFBASE) {
@@ -227,21 +225,21 @@ var roadFound = function (map, x, y, simData) {
   }
 
   // Force currentDensity in range 0-3 (trafficDensityMap values are capped at 240)
-  var currentDensity = simData.blockMaps.trafficDensityMap.worldGet(x, y) >> 6
+  let currentDensity = simData.blockMaps.trafficDensityMap.worldGet(x, y) >> 6
   if (currentDensity > 1) currentDensity -= 1
 
   if (currentDensity === density) return
 
-  var newValue =
+  const newValue =
     ((tileValue - TileValues.ROADBASE) & 15) + densityTable[currentDensity]
   // Preserve all bits except animation
-  var newFlags = currentTile.getFlags() & ~ANIMBIT
+  let newFlags = currentTile.getFlags() & ~ANIMBIT
   if (currentDensity > 0) newFlags |= ANIMBIT
 
   map.setTo(x, y, new Tile(newValue, newFlags))
 }
 
-var Road = {
+const Road = {
   registerHandlers: function (mapScanner, repairManager) {
     mapScanner.addAction(TileUtils.isRoad, roadFound)
   },

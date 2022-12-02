@@ -1,37 +1,37 @@
-import { Position } from './position'
-import { FIRESTATION, POLICESTATION } from './tileValues'
+import { Position } from './map/position'
+import { FIRESTATION, POLICESTATION } from './tiles/tileValues'
 
-var handleService = function (censusStat, budgetEffect, blockMap) {
+const handleService = function (censusStat, budgetEffect, blockMap) {
   return function (map, x, y, simData) {
     simData.census[censusStat] += 1
 
-    var effect = simData.budget[budgetEffect]
-    var isPowered = map.getTile(x, y).isPowered()
+    let effect = simData.budget[budgetEffect]
+    const isPowered = map.getTile(x, y).isPowered()
     // Unpowered buildings are half as effective
     if (!isPowered) effect = Math.floor(effect / 2)
 
-    var pos = new Position(x, y)
-    var connectedToRoads = simData.trafficManager.findPerimeterRoad(pos)
+    const pos = new Position(x, y)
+    const connectedToRoads = simData.trafficManager.findPerimeterRoad(pos)
     if (!connectedToRoads) effect = Math.floor(effect / 2)
 
-    var currentEffect = simData.blockMaps[blockMap].worldGet(x, y)
+    let currentEffect = simData.blockMaps[blockMap].worldGet(x, y)
     currentEffect += effect
     simData.blockMaps[blockMap].worldSet(x, y, currentEffect)
   }
 }
 
-var policeStationFound = handleService(
+const policeStationFound = handleService(
   'policeStationPop',
   'policeEffect',
   'policeStationMap'
 )
-var fireStationFound = handleService(
+const fireStationFound = handleService(
   'fireStationPop',
   'fireEffect',
   'fireStationMap'
 )
 
-var EmergencyServices = {
+const EmergencyServices = {
   registerHandlers: function (mapScanner, repairManager) {
     mapScanner.addAction(POLICESTATION, policeStationFound)
     mapScanner.addAction(FIRESTATION, fireStationFound)
