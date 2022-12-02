@@ -47,6 +47,9 @@ export const LASTFIRE = 63
 export const HBRIDGE = 64 // Horizontal bridge
 export const ROADBASE = HBRIDGE
 export const VBRIDGE = 65 // Vertical bridge
+
+// Road
+
 export const ROADS = 66
 export const ROADS2 = 67
 export const ROADS3 = 68

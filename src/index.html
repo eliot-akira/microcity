@@ -10,108 +10,100 @@
 
 <body class="font-pixels">
 
-  <img id="tiles" class="imageData" src="./images/tiles/future.png" alt="Game tileset" />
+  <img id="tiles" class="imageData" src="./images/tiles/earth.png" alt="Game tileset" />
 
   <img id="sprites" class="imageData" src="./images/sprites.png" alt="Game sprites" />
 
   <div id="wrapper">
     <main id="canvasContainer">
+
       <div class="hidden" id="opaque"></div>
 
       <div id="infobar" class="alignCenter width150 z1">
+
         <div class="inner">
           <div class="semibold chunk">
-            <span id="name">Your Name Here</span>
+            <span id="name">Microcity</span>
           </div>
           <div>
-            <span id="date">Year 0 Jan</span>
+            <span id="date">-</span>
           </div>
-          <div class="elided">Funds $<span id="funds">20000</span></div>
+          <div class="elided">Funds $<span id="funds"></span></div>
           <!-- <div class="elided">Score: <span id="score">0</span></div> -->
           <div>
-            <span id="cclass">VILLAGE</span> <span id="population">0</span>
+            <span id="cclass"></span> <span id="population">0</span>
           </div>
 
+          <hr>
 
-          <div style="margin: 10px 0"></div>
-          <button id="bulldozerButton" data-size="1" data-tool="bulldozer" data-colour="salmon" class="toolButton unselected">
-            Bulldozer
-          </button>
-          <button id="roadButton" data-size="1" data-tool="road" data-colour="black" class="toolButton unselected">
-            Road
-          </button>
-
-          <button id="wireButton" data-size="1" data-tool="wire" data-colour="khaki" class="toolButton unselected">
-            Wire
-          </button>
-          <button id="railButton" data-size="1" data-tool="rail" data-colour="brown" class="toolButton unselected">
-            Rail
-          </button>
-
-          <button id="parkButton" data-size="1" data-tool="park" data-colour="darkgreen" class="toolButton unselected">
-            Park
-          </button>
-          <button id="residentialButton" data-size="3" data-tool="residential" data-colour="lime" class="toolButton unselected">
-            Residential
-          </button>
-
-          <button id="commercialButton" data-size="3" data-tool="commercial" data-colour="blue" class="toolButton unselected">
-            Commercial
-          </button>
-          <button id="industrialButton" data-size="3" data-tool="industrial" data-colour="yellow" class="toolButton unselected">
-            Industrial
-          </button>
-
-          <div style="margin: 10px 0"></div>
-
-          <button id="policeButton" data-size="3" data-tool="police" data-colour="darkblue" class="toolButton unselected">
-            Police
-          </button>
-          <button id="fireButton" data-size="3" data-tool="fire" data-colour="red" class="toolButton unselected">
-            Fire
+          <button id="residentialButton" data-size="3" data-tool="residential" data-colour="lime" class="toolButton unselected" title="Residential">
+            <img src="images/tools/residential.png" alt="Residential">
+          </button><button id="commercialButton" data-size="3" data-tool="commercial" data-colour="blue" class="toolButton unselected" title="Commercial">
+            <img src="images/tools/commercial.png" alt="Commercial">
+          </button><button id="industrialButton" data-size="3" data-tool="industrial" data-colour="yellow" class="toolButton unselected" title="Industrial">
+            <img src="images/tools/industrial.png" alt="Industrial">
+          </button><button id="bulldozerButton" data-size="1" data-tool="bulldozer" data-colour="salmon" class="toolButton unselected" title="Bulldozer">
+            <img src="images/tools/bulldozer.png" alt="Bulldozer">
+          </button><button id="roadButton" data-size="1" data-tool="road" data-colour="black" class="toolButton unselected" title="Road">
+            <img src="images/tools/road.png" alt="Road">
+          </button><button id="wireButton" data-size="1" data-tool="wire" data-colour="khaki" class="toolButton unselected" title="Wire">
+            <img src="images/tools/wire.png" alt="Wire">
+          </button><button id="railButton" data-size="1" data-tool="rail" data-colour="brown" class="toolButton unselected" title="Rail">
+            <img src="images/tools/rail.png" alt="Rail">
+          </button><button id="parkButton" data-size="1" data-tool="park" data-colour="darkgreen" class="toolButton unselected" title="Park">
+            <img src="images/tools/park.png" alt="Park">
+          </button><button id="policeButton" data-size="3" data-tool="police" data-colour="darkblue" class="toolButton unselected" title="Police">
+            <img src="images/tools/police.png" alt="Police">
+          </button><button id="fireButton" data-size="3" data-tool="fire" data-colour="red" class="toolButton unselected" title="Fire">
+            <img src="images/tools/fire.png" alt="Fire">
+          </button><button id="stadiumButton" data-size="4" data-tool="stadium" data-colour="indigo" class="toolButton unselected" title="Stadium">
+            <img src="images/tools/stadium.png" alt="Stadium">
+          </button><button id="coalButton" data-size="4" data-tool="coal" data-colour="gray" class="toolButton unselected" title="Coal">
+            <img src="images/tools/coal.png" alt="Coal">
+          </button><button id="nuclearButton" data-size="4" data-tool="nuclear" data-colour="mistyrose" class="toolButton unselected" title="Nuclear">
+            <img src="images/tools/nuclear.png" alt="Nuclear">
+          </button><button id="portButton" data-size="4" data-tool="port" data-colour="dodgerblue" class="toolButton unselected" title="Port">
+            <img src="images/tools/port.png" alt="Port">
+          </button><button id="airportButton" data-size="6" data-tool="airport" data-colour="violet" class="toolButton unselected" title="Airport">
+            <img src="images/tools/airport.png" alt="Airport">
+          </button><button id="queryButton" data-size="1" data-tool="query" data-colour="cyan" class="toolButton unselected" title="Query">
+            <img src="images/tools/query.png" alt="Query">
           </button>
 
-          <button id="stadiumButton" data-size="4" data-tool="stadium" data-colour="indigo" class="toolButton unselected">
-            Stadium
-          </button>
+<!-- <div style="margin: 6px 0"></div> -->
 
-          <button id="nuclearButton" data-size="4" data-tool="nuclear" data-colour="mistyrose" class="toolButton unselected">
-            Nuclear
-          </button>
-          <button id="coalButton" data-size="4" data-tool="coal" data-colour="gray" class="toolButton unselected">
-            Coal
-          </button>
+<!-- <select id="tilesetSelect" name="tileset">
+  <option value="asia">Asia</option>
+  <option value="classic">Classic</option>
+  <option value="earth" selected>Earth</option>
+  <option value="future">Future</option>
+  <option value="medieval">Medieval</option>
+  <option value="moon">Moon</option>
+  <option value="snow">Snow</option>
+  <option value="wild-west">Wild west</option>
+</select> -->
 
-          <button id="portButton" data-size="4" data-tool="port" data-colour="dodgerblue" class="toolButton unselected">
-            Port
-          </button>
-          <button id="airportButton" data-size="6" data-tool="airport" data-colour="violet" class="toolButton unselected">
-            Airport
-          </button>
+          <!-- <button id="budgetRequest" class="miscButton">Budget</button> -->
 
+          <!-- <button id="evalRequest" class="miscButton">Evaluation</button> -->
 
-          <div style="margin: 10px 0"></div>
+          <!-- <button id="disasterRequest" class="miscButton">Disasters</button> -->
 
-          <button id="queryButton" data-size="1" data-tool="query" data-colour="cyan" class="toolButton unselected">
-            Query
-          </button>
-
-          <button id="budgetRequest" class="miscButton">Budget</button>
-
-          <button id="evalRequest" class="miscButton">Evaluation</button>
-
-          <button id="disasterRequest" class="miscButton">Disasters</button>
-          <button id="saveRequest" class="miscButton loadSave">
+          <!-- <button id="saveRequest" class="miscButton loadSave">
             Save
           </button>
-          <button id="settingsRequest" class="miscButton">Settings</button>
-          <button id="screenshotRequest" class="miscButton">
-            Take Picture
-          </button>
-          <button id="pauseRequest" class="miscButton">Pause</button>
+          <button id="settingsRequest" class="miscButton">
+            Settings
+          </button> -->
+          <!-- <button id="screenshotRequest" class="miscButton">
+            Screenshot
+          </button> -->
+          <!-- <button id="pauseRequest" class="miscButton">
+            Pause
+          </button> -->
 
 
-          <div style="margin: 10px 0"></div>
+          <div style="margin: 6px 0"></div>
 
           <div id="notifications"></div>
           <div id="toolInfo" class="alignCenter">

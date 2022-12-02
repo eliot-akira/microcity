@@ -5,7 +5,8 @@
 body {
   padding: 0;
   margin: 0;
-  background-image: url('../docs/images/dirtbg.png');
+  // background-image: url('../docs/images/dirtbg.png');
+  background-color: #000;
 }
 
 @font-face {
@@ -27,9 +28,9 @@ body {
   top: 0;
   // height: 150px;
 
-  height: 100vh;
+  // height: 100vh;
   // background-color: rgba(255, 255, 255, 0.8);
-  background-color: rgba(0, 0, 0, .3);
+  background-color: rgba(0, 0, 0, .6);
   // background-color: #c7c7c7;
   // background-color: #343434;
   &, button, input, select {
@@ -37,6 +38,12 @@ body {
     color: white;
   }
 
+  hr {
+    margin: .5rem 0;
+padding: 0;
+border: 0;
+border-bottom: 1px solid rgba(255,255,255, .3);
+  }
 
 // Notifications
 
@@ -56,14 +63,46 @@ body {
   color: white;
 }
 
-
+// Tools
+.selected:not(.toolButton) {
+  font-weight: bold;
+  border: 1px solid black;
 }
+.toolButton {
+  display: inline-block;
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+  img {
+    margin: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    // Icon background: bababa, cbcbcb
+    border-top: 1px solid #555;
+    border-left: 1px solid #555;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
+  &.selected img {
+    border: 1px solid yellow;
+  }
+}
+
+select {
+  background-color: transparent;
+  border: 1px solid #777;
+  border-radius: 4px;
+  font-size: 14px;
+  padding: 2px 6px;
+}
+
+} // #info-bar
 
 
 button,
 input[type='submit'] {
-  width: 140px;
-  height: 19px;
+  // width: 140px;
+  // height: 19px;
   border-radius: 3px;
   cursor: pointer;
   border: none;
@@ -313,11 +352,6 @@ nav li {
   display: inline-block;
 }
 
-.selected {
-  font-weight: bold;
-  border: 1px solid black;
-}
-
 .semibold {
   font-weight: 600px;
 }
@@ -339,19 +373,6 @@ nav li {
 .statisticsRight {
   display: inline-block;
   width: 150px;
-}
-
-.toolButton {
-  width: 140px;
-  margin-left: 5px;
-  margin-right: 5px;
-
-  // color: black;
-  // background-color: rgba(255, 255, 255, 0.5); // white;
-  background-color: transparent;
-
-  // font-size: 12px;
-  display: inline-block;
 }
 
 .miscButton {

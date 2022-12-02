@@ -10,7 +10,7 @@ class GameCanvas {
 
   static DEFAULT_ID = 'microcity-canvas'
 
-  constructor(id, parentNode, zoomRatio = 1) {
+  constructor(id, parentNode, zoomRatio = 1.4) {
   // if (!(this instanceof GameCanvas)) { return new GameCanvas(id, parentNode, width, height) }
 
     if (arguments.length < 1) { throw new Error('Attempt to construct a GameCanvas with no parameters') }
@@ -33,6 +33,7 @@ class GameCanvas {
 
     this._canvas = document.createElement('canvas')
     this._canvas.id = id
+    this.ctx = this._canvas.getContext('2d')
 
     // The canvas is assumed to fill its container on-screen
     const rect = parentNode.getBoundingClientRect()
@@ -122,11 +123,14 @@ class GameCanvas {
   }
 
   _calculateDimensions(force) {
+
     force = force || false
 
     // The canvas is assumed to fill its container on-screen
-    const canvasWidth = (this.canvasWidth = this._canvas.parentNode.clientWidth)
-    const canvasHeight = (this.canvasHeight = this._canvas.parentNode.clientHeight)
+    const canvasWidth = this.canvasWidth =
+      this._canvas.parentNode.clientWidth
+    const canvasHeight = this.canvasHeight =
+      this._canvas.parentNode.clientHeight
 
     if (
       canvasHeight === this._lastCanvasHeight
@@ -146,19 +150,28 @@ class GameCanvas {
     this._totalTilesInViewY = Math.ceil(canvasHeight / w)
 
     if (this._allowScrolling) {
-    // The min/max properties denote how far we will let the canvas' origin move: the map
-    // should be visible in at least half the canvas
+
+      // The min/max properties denote how far we will let the canvas' origin move: the map
+      // should be visible in at least half the canvas
 
       this.minX = 0 // - Math.ceil(Math.floor(canvasWidth / w) / 2)
-      this.maxX = this._map.width - 1 - Math.ceil(Math.floor(canvasWidth / w))
-      // Was: - Math.ceil(Math.floor(canvasWidth / w) / 2)
+      this.maxX = this._map.width - 1
+      // - this._wholeTilesInViewX
+      - Math.ceil(Math.floor(canvasWidth / w) / 2) // Original
+      // Subtract half of canvas based on zoomed tile
+      - Math.floor(Math.floor(canvasWidth / (w * this.zoomRatio)) / 2)
 
       this.minY = 0 // - Math.ceil(Math.floor(canvasHeight / w) / 2)
-      this.maxY = this._map.height - 1 - Math.ceil(Math.floor(canvasHeight / w))
-      // Was: - Math.ceil(Math.floor(canvasHeight / w) / 2)
+      this.maxY = this._map.height - 1
+      // - this._wholeTilesInViewY
+      - Math.ceil(Math.floor(canvasHeight / w) / 2) // Original
+      // Subtract half of canvas based on zoomed tile
+      - Math.floor(Math.floor(canvasHeight / (w * this.zoomRatio)) / 2)
 
-      this._totalTilesInViewY = Math.ceil(canvasHeight / w)
+      // console.log('max', [this.maxX, this.maxY])
+
     } else {
+
       this.minX = 0
       this.minY = 0
       this.maxX = this._map.width - this._totalTilesInViewX
@@ -176,32 +189,29 @@ class GameCanvas {
   }
 
   moveNorth() {
-    if (!this.ready) throw new Error('Not ready!')
+    if (!this.ready) return
     if (this._originY > this.minY) this._originY--
   }
 
   moveEast() {
-    if (!this.ready) throw new Error('Not ready!')
-
+    if (!this.ready) return
     if (this._originX < this.maxX) this._originX++
   }
 
   moveSouth() {
-    if (!this.ready) throw new Error('Not ready!')
-
+    if (!this.ready) return
     if (this._originY < this.maxY) this._originY++
   }
 
   moveWest() {
-    if (!this.ready) throw new Error('Not ready!')
-
+    if (!this.ready) return
     if (this._originX > this.minX) this._originX--
   }
 
   moveTo(x, y) {
     if (arguments.length < 1) { throw new Error('GameCanvas moveTo called with no arguments') }
 
-    if (!this.ready) throw new Error('Not ready!')
+    if (!this.ready) return
 
     if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY) { throw new Error('Coordinates out of bounds') }
 
@@ -366,13 +376,14 @@ class GameCanvas {
     if (onlyVisible) return this._canvas.toDataURL()
 
     const tempCanvas = document.createElement('canvas')
-    tempCanvas.width = this._map.width * this._tileSet.tileWidth * this.zoomRatio
-    tempCanvas.height = this._map.height * this._tileSet.tileWidth * this.zoomRatio
-    const ctx = tempCanvas.getContext('2d')
+    tempCanvas.width = this._map.width * this._tileSet.tileWidth
+    //* this.zoomRatio
+    tempCanvas.height = this._map.height * this._tileSet.tileWidth
+    //* this.zoomRatio
 
     for (let x = 0; x < this._map.width; x++) {
       for (let y = 0; y < this._map.height; y++) {
-        this._paintOne(ctx, this._map.getTileValue(x, y), x, y)
+        this._paintOne(this.ctx, this._map.getTileValue(x, y), x, y)
       }
     }
     return tempCanvas.toDataURL()
@@ -618,7 +629,6 @@ class GameCanvas {
       return
     }
 
-    const ctx = this._canvas.getContext('2d')
     let lastPaintedTiles = this._lastPaintedTiles
 
     // Recompute our dimensions if there has been a resize since last paint
@@ -632,21 +642,21 @@ class GameCanvas {
 
       // If the dimensions or tileset has changed, set each entry in lastPaintedTiles to a bogus value to force a
       // repaint. Note: we use -2 as our bogus value; -1 would paint the black void
-      // if (
-      //   this._pendingTileSet
-      //   || this.canvasWidth !== this._lastCanvasWidth
-      //   || this.canvasHeight !== this._lastCanvasHeight
-      // ) {
+      if (
+        this._pendingTileSet
+        || this.canvasWidth !== this._lastCanvasWidth
+        || this.canvasHeight !== this._lastCanvasHeight
+      ) {
 
-      ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
+        this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
 
-      for (
-        y = 0, l = lastPaintedTiles !== null ? lastPaintedTiles.length : 0;
-        y < l;
-        y++
-      ) { lastPaintedTiles[y] = -2 }
+        for (
+          y = 0, l = lastPaintedTiles !== null ? lastPaintedTiles.length : 0;
+          y < l;
+          y++
+        ) { lastPaintedTiles[y] = -2 }
 
-      // }
+      }
 
       this._pendingTileSet = null
     }
@@ -673,7 +683,7 @@ class GameCanvas {
       isPaused
     )
 
-    this._paintTiles(ctx, tileValues)
+    this._paintTiles(this.ctx, tileValues)
     // The _paintTiles call updates this._lastPaintedTiles. Update our cached copy
     lastPaintedTiles = this._lastPaintedTiles
 
@@ -710,7 +720,7 @@ class GameCanvas {
 
     if (sprites) {
 
-      damaged = this._processSprites(ctx, sprites)
+      damaged = this._processSprites(this.ctx, sprites)
 
       for (i = 0, l = damaged.length; i < l; i++) {
         const damagedArea = damaged[i]

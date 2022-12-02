@@ -9,7 +9,7 @@ import { ZoneUtils } from '../zoneUtils'
 
 const BulldozerTool = EventEmitter(
   ConnectingTool(function (map) {
-    this.init(10, map, true)
+    this.init(10, map, true, true)
   })
 )
 

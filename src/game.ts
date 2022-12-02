@@ -24,12 +24,18 @@ import { Simulation } from './simulation'
 import { Storage } from './storage'
 import { Text } from './messages/text'
 import { TouchWarnWindow } from './windows/touchWarnWindow'
+import { TileSet } from './tiles/tileSet'
 
 const disasterTimeout = 20 * 1000
 
-function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
-
-  difficulty = difficulty || 0
+function Game({
+  map: gameMap,
+  tileSet,
+  snowTileSet,
+  spriteSheet,
+  difficulty = 0,
+  name = 'Microcity'
+}) {
 
   let savedGame
 
@@ -100,12 +106,12 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
 
   // Initialise monsterTV
 
-  this.monsterTV = new MonsterTV(
-    this.gameMap,
-    tileSet,
-    spriteSheet,
-    this.gameCanvas.animationManager
-  )
+  // this.monsterTV = new MonsterTV(
+  //   this.gameMap,
+  //   tileSet,
+  //   spriteSheet,
+  //   this.gameCanvas.animationManager
+  // )
 
   const opacityLayerID = 'opaque'
 
@@ -293,7 +299,8 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
 
   // And date changes
   // XXX Not yet activated
-  // this.simulation.addEventListener(Messages.DATE_UPDATED, this.onDateChange.bind(this));
+
+  this.simulation.addEventListener(Messages.DATE_UPDATED, this.onDateChange.bind(this))
 
   this.infoBar = InfoBar(
     'cclass',
@@ -325,7 +332,7 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
     this._reachedCapital =
     this._reachedMetropolis =
     this._reacedMegalopolis =
-      false
+    false
 
 
   // this.congratsWindow = new CongratsWindow(opacityLayerID, 'congratsWindow')
@@ -337,6 +344,15 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
   // Listen for touches, so we can warn tablet users
   // this.touchListener = touchListener.bind(this)
   // window.addEventListener('touchstart', this.touchListener, false)
+
+  /*
+    const $tileSelect = $('#tilesetSelect')
+    $tileSelect.on('change', (e) => {
+      const name = e.target.value
+      this.setTileset(name)
+    })
+    if ($tileSelect.val() !== 'earth') $tileSelect.val('earth')
+  */
 
   // Unhide controls
   this.revealControls()
@@ -398,11 +414,59 @@ function genericDialogClosure() {
   this._openWindow = null
 }
 
+
+const tileNames = [
+  // 'asia',
+  'classic',
+  'earth',
+  'future',
+  // 'medieval',
+  'moon',
+  // 'snow',
+  // 'wild-west'
+]
+
+const tileSetCache = {}
+
+let tileSetImage
+
+Game.prototype.setTileset = function (name) {
+
+  if (tileSetCache[name]) {
+    this.tileSet = tileSetCache[name]
+    this.gameCanvas.changeTileSet(this.tileSet)
+    return
+  }
+
+  tileSetImage = tileSetImage || document.createElement('img')
+
+  tileSetImage.src = `/images/tiles/${name}.png`
+
+  tileSetImage.onload = () => {
+    this.tileSet = tileSetCache[name] = new TileSet(
+      tileSetImage,
+      () => this.gameCanvas.changeTileSet(this.tileSet),
+      () => delete tileSetCache[name]
+    )
+  }
+}
+
+
 Game.prototype.onDateChange = function (date) {
+
   // if (date.month === 10 && Random.getChance(10))
   //   this.gameCanvas.changeTileSet(this.snowTileSet)
   // else if (date.month === 1) this.gameCanvas.changeTileSet(this.tileSet)
+
+  // return
+
+  // if (date.month % 6 === 0) {
+  //   this.setTileset(
+  //     tileNames[Math.round(Math.random() * tileNames.length)]
+  //   )
+  // }
 }
+
 
 Game.prototype.handleDisasterWindowClosure = function (request) {
   this.dialogOpen = false
@@ -545,6 +609,7 @@ Game.prototype.handleMandatoryBudget = function () {
 }
 
 Game.prototype.handleTool = function (data) {
+
   const x = data.x
   const y = data.y
 
@@ -598,6 +663,7 @@ Game.prototype.handlePause = function () {
 
 Game.prototype.handleInput = function () {
   if (!this.dialogOpen) {
+
     // Handle keyboard movement
 
     if (this.inputStatus.left) this.gameCanvas.moveWest()
@@ -681,16 +747,20 @@ Game.prototype.processFrontEndMessage = function (message) {
     if (cMessage !== this.name + ' is now a ') {
       console.log('Congratulations', cMessage)
       //   this.dialogOpen = true
-    //   this._openWindow = 'congratsWindow'
-    //   this.congratsWindow.open(cMessage)
+      //   this._openWindow = 'congratsWindow'
+      //   this.congratsWindow.open(cMessage)
     }
 
     return
   }
 
   // Show disaster if applicable
-  if (message.data) {
-    if (message.data.showable) { this.monsterTV.show(message.data.x, message.data.y) } else if (message.data.trackable) { this.monsterTV.track(message.data.x, message.data.y, message.data.sprite) }
+  if (this.monsterTV && message.data) {
+    if (message.data.showable) {
+      this.monsterTV.show(message.data.x, message.data.y)
+    } else if (message.data.trackable) {
+      this.monsterTV.track(message.data.x, message.data.y, message.data.sprite)
+    }
   }
 
   if (Text.badMessages[subject] !== undefined) {
@@ -789,8 +859,8 @@ var commonAnimate = function () {
   let sprites = this.calculateSpritesForPaint(this.gameCanvas)
   this.gameCanvas.paint(this.mouse, sprites, this.isPaused)
 
-  sprites = this.calculateSpritesForPaint(this.monsterTV.canvas)
-  this.monsterTV.paint(sprites, this.isPaused)
+  // sprites = this.calculateSpritesForPaint(this.monsterTV.canvas)
+  // this.monsterTV.paint(sprites, this.isPaused)
 
   nextFrame(this.animate)
 }

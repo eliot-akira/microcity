@@ -41,13 +41,15 @@ const InputStatus = EventEmitter(function (map, tileWidth) {
   this.toolWidth = 0
   this.toolColour = ''
 
+  this.$canvas = $(this.canvasID)
+
   // Add the listeners
   $(document).keydown(keyDownHandler.bind(this))
   $(document).keyup(keyUpHandler.bind(this))
 
   this.getRelativeCoordinates = getRelativeCoordinates.bind(this)
-  $(this.canvasID).on('mouseenter', mouseEnterHandler.bind(this))
-  $(this.canvasID).on('mouseleave', mouseLeaveHandler.bind(this))
+  this.$canvas.on('mouseenter', mouseEnterHandler.bind(this))
+  this.$canvas.on('mouseleave', mouseLeaveHandler.bind(this))
 
   this.mouseDownHandler = mouseDownHandler.bind(this)
   this.mouseMoveHandler = mouseMoveHandler.bind(this)
@@ -134,11 +136,11 @@ function getRelativeCoordinates(e) {
 }
 
 function mouseEnterHandler(e) {
-  if (this.currentTool === null) return
+  if (this.currentTool == null) return
 
-  $(this.canvasID).on('mousemove', this.mouseMoveHandler)
+  this.$canvas.on('mousemove', this.mouseMoveHandler)
 
-  if (this.currentTool.isDraggable) { $(this.canvasID).on('mousedown', this.mouseDownHandler) } else $(this.canvasID).on('click', this.canvasClickHandler)
+  if (this.currentTool.isDraggable) { this.$canvas.on('mousedown', this.mouseDownHandler) } else this.$canvas.on('click', this.canvasClickHandler)
 }
 
 function mouseDownHandler(e) {
@@ -154,7 +156,7 @@ function mouseDownHandler(e) {
   this._lastDragX = Math.floor(this.mouseX / this._tileWidth)
   this._lastDragY = Math.floor(this.mouseY / this._tileWidth)
 
-  $(this.canvasID).on('mouseup', this.mouseUpHandler)
+  this.$canvas.on('mouseup', this.mouseUpHandler)
   e.preventDefault()
 }
 
@@ -162,14 +164,14 @@ function mouseUpHandler(e) {
   this._dragging = false
   this._lastDragX = -1
   this._lastDragY = -1
-  $(this.canvasID).off('mouseup')
+  this.$canvas.off('mouseup')
   e.preventDefault()
 }
 
 function mouseLeaveHandler(e) {
-  $(this.canvasID).off('mousedown')
-  $(this.canvasID).off('mousemove')
-  $(this.canvasID).off('mouseup')
+  this.$canvas.off('mousedown')
+  this.$canvas.off('mousemove')
+  this.$canvas.off('mouseup')
 
   // Watch out: we might have been mid-drag
   if (this._dragging) {
@@ -178,7 +180,7 @@ function mouseLeaveHandler(e) {
     this._lastDragY = -1
   }
 
-  $(this.canvasID).off('click')
+  this.$canvas.off('click')
 
   this.mouseX = -1
   this.mouseY = -1
@@ -222,30 +224,41 @@ function canvasClickHandler(e) {
 }
 
 function toolButtonHandler(e) {
+
   // Remove highlight from last tool button
   $('.selected').each(function () {
-    $(this).removeClass('selected')
-    $(this).addClass('unselected')
+    this.classList.remove('selected')
+    this.classList.add('unselected')
+    // $(this).removeClass('selected')
+    // $(this).addClass('unselected')
   })
 
-  // Add highlight
-  $(e.target).removeClass('unselected')
-  $(e.target).addClass('selected')
+  let el = e.target
+  let $el = $(el)
 
-  this.toolName = $(e.target).attr('data-tool')
-  this.toolWidth = $(e.target).attr('data-size')
+  if (el.tagName.toLowerCase()==='img') {
+    el = el.parentNode // button
+    $el = $(el)
+  }
+
+  // Add highlight
+  $el.removeClass('unselected')
+  $el.addClass('selected')
+
+  this.toolName = $el.attr('data-tool')
+  this.toolWidth = $el.attr('data-size')
   this.currentTool = this.gameTools[this.toolName]
 
-  this.toolColour = '' // $(e.target).attr('data-colour')
+  this.toolColour = '' // $el.attr('data-colour')
 
   // $(toolOutputID).html('Tools')
 
   if (this.toolName !== 'query') {
-    $(this.canvasID).removeClass('helpPointer')
-    $(this.canvasID).addClass('pointer')
+    this.$canvas.removeClass('helpPointer')
+    this.$canvas.addClass('pointer')
   } else {
-    $(this.canvasID).removeClass('pointer')
-    $(this.canvasID).addClass('helpPointer')
+    this.$canvas.removeClass('pointer')
+    this.$canvas.addClass('helpPointer')
   }
 
   e.preventDefault()
@@ -260,8 +273,8 @@ InputStatus.prototype.speedChangeHandler = function (e) {
 
 InputStatus.prototype.clearTool = function () {
   if (this.toolName === 'query') {
-    $(this.canvasID).removeClass('helpPointer')
-    $(this.canvasID).addClass('pointer')
+    this.$canvas.removeClass('helpPointer')
+    this.$canvas.addClass('pointer')
   }
 
   this.currentTool = null

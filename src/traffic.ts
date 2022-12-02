@@ -17,9 +17,13 @@ Traffic.prototype.makeTraffic = function (x, y, blockMaps, destFn) {
   this._stack = []
 
   const pos = new Position(x, y)
-
   if (this.findPerimeterRoad(pos)) {
-    if (this.tryDrive(pos, destFn)) {
+
+    const drive = this.tryDrive(pos, destFn)
+
+    // console.log('makeTraffic', [x, y], drive)
+
+    if (drive) {
       this.addToTrafficDensityMap(blockMaps)
       return Traffic.ROUTE_FOUND
     }
@@ -34,15 +38,17 @@ Traffic.prototype.addToTrafficDensityMap = function (blockMaps) {
   const trafficDensityMap = blockMaps.trafficDensityMap
 
   while (this._stack.length > 0) {
+
     const pos = this._stack.pop()
 
-    // Could this happen?!?
     if (!this._map.testBounds(pos.x, pos.y)) continue
 
     const tileValue = this._map.getTileValue(pos.x, pos.y)
 
     if (tileValue >= ROADBASE && tileValue < POWERBASE) {
+
       // Update traffic density.
+
       let traffic = trafficDensityMap.worldGet(pos.x, pos.y)
       traffic += 50
       traffic = Math.min(traffic, 240)
@@ -84,16 +90,17 @@ const MAX_TRAFFIC_DISTANCE = 30
 
 Traffic.prototype.tryDrive = function (startPos, destFn) {
   let dirLast
-  let drivePos = new Position(startPos)
+  let drivePos = new Position(startPos.x, startPos.y)
 
   /* Maximum distance to try */
   for (let dist = 0; dist < MAX_TRAFFIC_DISTANCE; dist++) {
     const dir = this.tryGo(drivePos, dirLast)
+
     if (dir) {
-      drivePos = Position.move(pos, dir)
+      drivePos = Position.move(drivePos, dir)
       dirLast = dir.oppositeDirection()
 
-      if (dist & 1) this._stack.push(new Position(drivePos))
+      if (dist & 1) this._stack.push(new Position(drivePos.x, drivePos.y))
 
       if (this.driveDone(drivePos, destFn)) return true
     } else {
@@ -117,14 +124,15 @@ Traffic.prototype.tryGo = function (pos, dirLast) {
 
   forEachCardinalDirection((dir) => {
     if (
-      dir != dirLast
-      && TileUtils.isDriveable(this._map.getTileFromMapOrDefault(pos, dir, DIRT))
+      dir !== dirLast
+      && TileUtils.isDriveable(
+        this._map.getTileFromMapOrDefault(pos, dir, DIRT)
+      )
     ) {
       directions.push(dir)
       count++
     }
   })
-
   if (count === 0) {
     return
   }

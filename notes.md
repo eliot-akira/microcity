@@ -1,5 +1,21 @@
 # Notes
 
+## Improve
+
+- Screenshot too big by zoomRatio
+- Inefficiency in DOM queries - For example, `$('.selected')`, `$(this.canvasID)`
+
+## Develop features
+
+- Generate new city
+- Export/import city
+- Control panel with tool icons
+- Mouse and touch drag to move around the map 
+- Macintosh-style scroll bar for map
+- Overviews
+
+## Tools
+
 - Residential $100
 - Commercial $100
 - Industrial $100

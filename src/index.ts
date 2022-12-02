@@ -44,14 +44,12 @@ function createGame(tileSet, spriteSheet) {
   const savedGame = Storage.canStore && Storage.getSavedGame()
 
   // Launch a new game
-  const game = new Game(
-    savedGame || map,
+  const game = new Game({
+    map: savedGame || map,
     tileSet,
-    null,
     spriteSheet,
-    Simulation.LEVEL_EASY,
-    'Microcity'
-  )
+    difficulty: Simulation.LEVEL_EASY
+  })
 
   setInterval(function () {
     Storage.canStore && game.save()

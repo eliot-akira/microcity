@@ -178,6 +178,7 @@ const densityTable = [
 ]
 
 const roadFound = function (map, x, y, simData) {
+
   simData.census.roadTotal += 1
 
   let currentTile = map.getTile(x, y)
@@ -228,10 +229,13 @@ const roadFound = function (map, x, y, simData) {
   let currentDensity = simData.blockMaps.trafficDensityMap.worldGet(x, y) >> 6
   if (currentDensity > 1) currentDensity -= 1
 
+// console.log('Road', [x,y], currentDensity)
+
   if (currentDensity === density) return
 
   const newValue =
     ((tileValue - TileValues.ROADBASE) & 15) + densityTable[currentDensity]
+
   // Preserve all bits except animation
   let newFlags = currentTile.getFlags() & ~ANIMBIT
   if (currentDensity > 0) newFlags |= ANIMBIT
