@@ -53,7 +53,7 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
   )
 
   // Tick duration in milliseconds - originally 0 - see function tick() below
-  this.tickDuration = 60
+  this.tickDuration = 30
 
   this.name = name || 'Microcity'
   this.everClicked = false
