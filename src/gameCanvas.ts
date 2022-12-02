@@ -10,7 +10,7 @@ class GameCanvas {
 
   static DEFAULT_ID = 'microcity-canvas'
 
-  constructor(id, parentNode, zoomRatio = 1.22) {
+  constructor(id, parentNode, zoomRatio = 1.3) {
   // if (!(this instanceof GameCanvas)) { return new GameCanvas(id, parentNode, width, height) }
 
     if (arguments.length < 1) { throw new Error('Attempt to construct a GameCanvas with no parameters') }

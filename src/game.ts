@@ -53,9 +53,9 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
   )
 
   // Tick duration in milliseconds - originally 0 - see function tick() below
-  this.tickDuration = 30
+  this.tickDuration = 60
 
-  this.name = name || 'MyTown'
+  this.name = name || 'Microcity'
   this.everClicked = false
 
   if (savedGame) this.load(savedGame)
@@ -99,6 +99,7 @@ function Game(gameMap, tileSet, snowTileSet, spriteSheet, difficulty, name) {
   // }
 
   // Initialise monsterTV
+
   this.monsterTV = new MonsterTV(
     this.gameMap,
     tileSet,
