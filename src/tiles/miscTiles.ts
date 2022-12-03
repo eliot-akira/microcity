@@ -1,7 +1,7 @@
 import { Random } from '../random'
 import { TileUtils } from './tileUtils'
 import { DIRT, IZB, RADTILE } from './tileValues'
-import { ZoneUtils } from '../zoneUtils'
+import { ZoneUtils } from '../zones/zoneUtils'
 
 const xDelta = [-1, 0, 1, 0]
 const yDelta = [0, -1, 0, 1]

@@ -1,6 +1,6 @@
 import { ANIMBIT, BULLBIT } from '../tiles/tileFlags'
 import * as TileValues from '../tiles/tileValues'
-import { ZoneUtils } from '../zoneUtils'
+import { ZoneUtils } from '../zones/zoneUtils'
 
 const pixToWorld = function (p) {
   return p >> 4

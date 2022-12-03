@@ -1,4 +1,4 @@
-import { Bounds } from '../bounds'
+import { Bounds } from './bounds'
 import * as Direction from './direction'
 import { MiscUtils } from '../utils'
 import { Position } from './position'

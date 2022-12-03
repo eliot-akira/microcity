@@ -1,9 +1,9 @@
 import { BlockMap } from './blockMap'
-import { Commercial } from '../commercial'
-import { Industrial } from '../industrial'
+import { Commercial } from '../zones/commercial'
+import { Industrial } from '../zones/industrial'
 import { MiscUtils } from '../utils'
 import { Random } from '../random'
-import { Residential } from '../residential'
+import { Residential } from '../zones/residential'
 import * as TileValues from '../tiles/tileValues'
 
 // Smoothing styles for map smoothing

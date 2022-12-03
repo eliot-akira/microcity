@@ -1,5 +1,5 @@
-import { Evaluation } from '../evaluation'
-import * as Messages from '.'
+import { Evaluation } from '../stats/evaluation'
+import * as Messages from './index'
 import { Simulation } from '../simulation'
 
 // TODO Some kind of rudimentary L20N based on navigator.language?

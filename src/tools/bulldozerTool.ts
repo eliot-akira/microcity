@@ -5,7 +5,7 @@ import { Random } from '../random'
 import { ANIMBIT, BULLBIT } from '../tiles/tileFlags'
 import { TileUtils } from '../tiles/tileUtils'
 import * as TileValues from '../tiles/tileValues'
-import { ZoneUtils } from '../zoneUtils'
+import { ZoneUtils } from '../zones/zoneUtils'
 
 const BulldozerTool = EventEmitter(
   ConnectingTool(function (map) {
