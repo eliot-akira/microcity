@@ -39,7 +39,7 @@ body {
   }
 
   hr {
-    margin: .5rem 0;
+    margin: 4px 0;
 padding: 0;
 border: 0;
 border-bottom: 1px solid rgba(255,255,255, .3);
@@ -74,18 +74,24 @@ border-bottom: 1px solid rgba(255,255,255, .3);
   margin: 0;
   padding: 0;
   img {
+    width: 32px;
     margin: 0;
     padding: 0;
-    border: 1px solid transparent;
+    border: 2px solid transparent;
     // Icon background: bababa, cbcbcb
-    border-top: 1px solid #555;
-    border-left: 1px solid #555;
-    border-right: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
+    border-top: 2px solid #333;
+    border-left: 2px solid #333;
+    border-right: 2px solid #888;
+    border-bottom: 2px solid #888;
   }
   &.selected img {
-    border: 1px solid yellow;
+    border: 2px solid yellow;
   }
+}
+
+.game-actions .toolButton {
+  padding: 0 .25rem;
+  background-color: #000;
 }
 
 select {
@@ -111,6 +117,10 @@ input[type='submit'] {
 button, input, select {
   font-family: inherit;
   font-size: inherit;
+}
+
+.text-sm, #notifications {
+  font-size: 14px;
 }
 
 footer {
@@ -500,17 +510,6 @@ nav li {
 #nameForm {
   // font-size: 18px;
   width: 150px;
-}
-
-#notifications {
-font-size: 14px;
-  // position: absolute;
-  // bottom: 65px;
-  // left: 50%;
-  // border: 1px solid black;
-  // width: 400px;
-  // height: 19px;
-  // transform: translateX(-50%);
 }
 
 #opaque {

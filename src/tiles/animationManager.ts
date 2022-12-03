@@ -11,8 +11,8 @@ import { TileUtils } from './tileUtils'
 class AnimationManager {
   constructor(map, animationPeriod, blinkPeriod) {
 
-    animationPeriod = animationPeriod || 240 // 250, 50
-    blinkPeriod = blinkPeriod || 600 // 500
+    animationPeriod = animationPeriod || 220 // 250, 50
+    blinkPeriod = blinkPeriod || 600
 
     this._map = map
     this.animationPeriod = animationPeriod

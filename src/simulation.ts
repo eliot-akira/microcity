@@ -23,6 +23,27 @@ import { Transport } from './transport'
 import { Valves } from './valves'
 
 const Simulation = EventEmitter(function (gameMap, gameLevel, speed, savedGame) {
+  this.reset(gameMap, gameLevel, speed)
+
+  // Register actions
+  Commercial.registerHandlers(this._mapScanner, this._repairManager)
+  EmergencyServices.registerHandlers(this._mapScanner, this._repairManager)
+  Industrial.registerHandlers(this._mapScanner, this._repairManager)
+  MiscTiles.registerHandlers(this._mapScanner, this._repairManager)
+  Road.registerHandlers(this._mapScanner, this._repairManager)
+  Residential.registerHandlers(this._mapScanner, this._repairManager)
+  Stadium.registerHandlers(this._mapScanner, this._repairManager)
+  Transport.registerHandlers(this._mapScanner, this._repairManager)
+
+  if (savedGame) {
+    this.load(savedGame)
+  }
+
+  this.init()
+})
+
+Simulation.prototype.reset = function (gameMap, gameLevel = Simulation.LEVEL_EASY, speed = Simulation.SPEED_MED) {
+
   this._map = gameMap
   this.setLevel(gameLevel)
   this.setSpeed(speed)
@@ -33,6 +54,8 @@ const Simulation = EventEmitter(function (gameMap, gameLevel, speed, savedGame) 
   this._cityPopLast = 0
   this._messageLast = Messages.REACHED_VILLAGE
   this._startingYear = 1 // 1900
+
+  this._lastTickTime = -1
 
   // Last date sent to front end
   this._cityYearLast = -1
@@ -100,17 +123,91 @@ const Simulation = EventEmitter(function (gameMap, gameLevel, speed, savedGame) 
     tempMap3: new BlockMap(this._map.width, this._map.height, 4),
   }
 
+  this.budget.setFunds(999999999) // Was 20000
+  this._census.totalPop = 1
+
   this._clearCensus()
 
-  if (savedGame) {
-    this.load(savedGame)
-  } else {
-    this.budget.setFunds(1000000) // 20000
-    this._census.totalPop = 1
+
+  // Add various listeners that we will in turn transmit upwards
+  const evaluationEvents = [
+    'CLASSIFICATION_UPDATED',
+    'POPULATION_UPDATED',
+    'SCORE_UPDATED',
+  ].map(function (m) {
+    return Messages[m]
+  })
+  for (var i = 0, l = evaluationEvents.length; i < l; i++) {
+    this.evaluation.addEventListener(
+      evaluationEvents[i],
+      MiscUtils.reflectEvent.bind(this, evaluationEvents[i])
+    )
   }
 
-  this.init()
-})
+  this._powerManager.addEventListener(
+    Messages.NOT_ENOUGH_POWER,
+    function (e) {
+      const d = new Date()
+
+      if (
+        this._lastPowerMessage === null
+        || d - this._lastPowerMessage > 1000 * 60 * 2
+      ) {
+        this._emitEvent(Messages.FRONT_END_MESSAGE, {
+          subject: Messages.NOT_ENOUGH_POWER,
+        })
+        this._lastPowerMessage = d
+      }
+    }.bind(this)
+  )
+
+    /**
+     * Event listeners for newly created instances
+     */
+
+  this.budget.addEventListener(
+    Messages.FUNDS_CHANGED,
+    MiscUtils.reflectEvent.bind(this, Messages.FUNDS_CHANGED)
+  )
+  this.budget.addEventListener(
+    Messages.BUDGET_NEEDED,
+    MiscUtils.reflectEvent.bind(this, Messages.BUDGET_NEEDED)
+  )
+  this.budget.addEventListener(
+    Messages.NO_MONEY,
+    this._wrapMessage.bind(this, Messages.NO_MONEY)
+  )
+
+  this._valves.addEventListener(
+    Messages.VALVES_UPDATED,
+    this._onValveChange.bind(this)
+  )
+
+  for (i = 0, l = Messages.DISASTER_MESSAGES.length; i < l; i++) {
+    this.spriteManager.addEventListener(
+      Messages.DISASTER_MESSAGES[i],
+      this._wrapMessage.bind(this, Messages.DISASTER_MESSAGES[i])
+    )
+    this.disasterManager.addEventListener(
+      Messages.DISASTER_MESSAGES[i],
+      this._wrapMessage.bind(this, Messages.DISASTER_MESSAGES[i])
+    )
+  }
+  for (i = 0, l = Messages.CRASHES.length; i < l; i++) {
+    this.spriteManager.addEventListener(
+      Messages.CRASHES[i],
+      this._wrapMessage.bind(this, Messages.CRASHES[i])
+    )
+  }
+
+  this.spriteManager.addEventListener(
+    Messages.HEAVY_TRAFFIC,
+    this._wrapMessage.bind(this, Messages.HEAVY_TRAFFIC)
+  )
+
+  this._powerManager.registerHandlers(this._mapScanner, this._repairManager)
+
+}
 
 Simulation.prototype.setLevel = function (l) {
   if (
@@ -140,7 +237,10 @@ Simulation.prototype.isPaused = function () {
 const saveProps = ['_cityTime', '_speed', '_gameLevel']
 
 Simulation.prototype.save = function (saveData) {
-  for (let i = 0, l = saveProps.length; i < l; i++) { saveData[saveProps[i]] = this[saveProps[i]] }
+
+  for (let i = 0, l = saveProps.length; i < l; i++) {
+    saveData[saveProps[i]] = this[saveProps[i]]
+  }
 
   this._map.save(saveData)
   this.evaluation.save(saveData)
@@ -150,7 +250,10 @@ Simulation.prototype.save = function (saveData) {
 }
 
 Simulation.prototype.load = function (saveData) {
-  for (let i = 0, l = saveProps.length; i < l; i++) { this[saveProps[i]] = saveData[saveProps[i]] }
+
+  for (let i = 0, l = saveProps.length; i < l; i++) {
+    this[saveProps[i]] = saveData[saveProps[i]] || this[saveProps[i]]
+  }
 
   this._map.load(saveData)
   this.evaluation.load(saveData)
@@ -224,94 +327,12 @@ Simulation.prototype._constructSimData = function () {
 }
 
 Simulation.prototype.init = function () {
-  this._lastTickTime = -1
-
-  // Add various listeners that we will in turn transmit upwards
-  const evaluationEvents = [
-    'CLASSIFICATION_UPDATED',
-    'POPULATION_UPDATED',
-    'SCORE_UPDATED',
-  ].map(function (m) {
-    return Messages[m]
-  })
-  for (var i = 0, l = evaluationEvents.length; i < l; i++) {
-    this.evaluation.addEventListener(
-      evaluationEvents[i],
-      MiscUtils.reflectEvent.bind(this, evaluationEvents[i])
-    )
-  }
-
-  this._powerManager.addEventListener(
-    Messages.NOT_ENOUGH_POWER,
-    function (e) {
-      const d = new Date()
-
-      if (
-        this._lastPowerMessage === null
-        || d - this._lastPowerMessage > 1000 * 60 * 2
-      ) {
-        this._emitEvent(Messages.FRONT_END_MESSAGE, {
-          subject: Messages.NOT_ENOUGH_POWER,
-        })
-        this._lastPowerMessage = d
-      }
-    }.bind(this)
-  )
-
-  this.budget.addEventListener(
-    Messages.FUNDS_CHANGED,
-    MiscUtils.reflectEvent.bind(this, Messages.FUNDS_CHANGED)
-  )
-  this.budget.addEventListener(
-    Messages.BUDGET_NEEDED,
-    MiscUtils.reflectEvent.bind(this, Messages.BUDGET_NEEDED)
-  )
-  this.budget.addEventListener(
-    Messages.NO_MONEY,
-    this._wrapMessage.bind(this, Messages.NO_MONEY)
-  )
-
-  this._valves.addEventListener(
-    Messages.VALVES_UPDATED,
-    this._onValveChange.bind(this)
-  )
-
-  for (i = 0, l = Messages.DISASTER_MESSAGES.length; i < l; i++) {
-    this.spriteManager.addEventListener(
-      Messages.DISASTER_MESSAGES[i],
-      this._wrapMessage.bind(this, Messages.DISASTER_MESSAGES[i])
-    )
-    this.disasterManager.addEventListener(
-      Messages.DISASTER_MESSAGES[i],
-      this._wrapMessage.bind(this, Messages.DISASTER_MESSAGES[i])
-    )
-  }
-  for (i = 0, l = Messages.CRASHES.length; i < l; i++) {
-    this.spriteManager.addEventListener(
-      Messages.CRASHES[i],
-      this._wrapMessage.bind(this, Messages.CRASHES[i])
-    )
-  }
-
-  this.spriteManager.addEventListener(
-    Messages.HEAVY_TRAFFIC,
-    this._wrapMessage.bind(this, Messages.HEAVY_TRAFFIC)
-  )
-
-  // Register actions
-  Commercial.registerHandlers(this._mapScanner, this._repairManager)
-  EmergencyServices.registerHandlers(this._mapScanner, this._repairManager)
-  Industrial.registerHandlers(this._mapScanner, this._repairManager)
-  MiscTiles.registerHandlers(this._mapScanner, this._repairManager)
-  this._powerManager.registerHandlers(this._mapScanner, this._repairManager)
-  Road.registerHandlers(this._mapScanner, this._repairManager)
-  Residential.registerHandlers(this._mapScanner, this._repairManager)
-  Stadium.registerHandlers(this._mapScanner, this._repairManager)
-  Transport.registerHandlers(this._mapScanner, this._repairManager)
 
   const simData = this._constructSimData()
+
   this._mapScanner.mapScan(0, this._map.width, simData)
   this._powerManager.doPowerScan(this._census)
+
   BlockMapUtils.pollutionTerrainLandValueScan(
     this._map,
     this._census,

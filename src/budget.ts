@@ -71,7 +71,9 @@ Budget.prototype.save = function (saveData) {
 }
 
 Budget.prototype.load = function (saveData) {
-  for (let i = 0, l = saveProps.length; i < l; i++) { this[saveProps[i]] = saveData[saveProps[i]] }
+  for (let i = 0, l = saveProps.length; i < l; i++) {
+    this[saveProps[i]] = saveData[saveProps[i]] || this[saveProps[i]]
+  }
 
   this._emitEvent(Messages.AUTOBUDGET_CHANGED, this.autoBudget)
   this._emitEvent(Messages.FUNDS_CHANGED, this.totalFunds)

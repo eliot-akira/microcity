@@ -25,6 +25,7 @@ import { Storage } from './storage'
 import { Text } from './messages/text'
 import { TouchWarnWindow } from './windows/touchWarnWindow'
 import { TileSet } from './tiles/tileSet'
+import { MapGenerator } from './map/mapGenerator'
 
 let ticks = 0
 
@@ -156,17 +157,21 @@ class Game {
       this.gameMap = gameMap
       savedGame = null
     } else {
-    // Saved game
-      this.gameMap = new GameMap(gameMap.width || 120, gameMap.height || 100) // 240, 240
+      // Saved game
+      this.gameMap = new GameMap(
+        gameMap.width,
+        gameMap.height
+      )
       savedGame = gameMap
     }
 
     this.tileSet = tileSet
-    this.snowTileSet = snowTileSet
+    this.spriteSheet = spriteSheet
     this.defaultSpeed = Simulation.SPEED_MED
+    this.difficulty = difficulty
     this.simulation = new Simulation(
       this.gameMap,
-      difficulty,
+      this.difficulty,
       this.defaultSpeed,
       savedGame
     )
@@ -177,13 +182,13 @@ class Game {
     this.name = name || 'Microcity'
     this.everClicked = false
 
-    if (savedGame) this.load(savedGame)
+    if (savedGame) this.loadInitial(savedGame)
 
     this.rci = new RCI('RCIContainer', this.simulation)
 
     // Note: must init canvas before inputStatus
     this.gameCanvas = new GameCanvas('canvasContainer')
-    this.gameCanvas.init(this.gameMap, this.tileSet, spriteSheet)
+    this.gameCanvas.init(this.gameMap, this.tileSet, this.spriteSheet)
     this.inputStatus = new InputStatus(this.gameMap, tileSet.tileWidth)
 
     this.dialogOpen = false
@@ -391,34 +396,35 @@ class Game {
       this.handleSave.bind(this)
     )
 
-    // Listen for front end messages
+    // Front end messages
     this.simulation.addEventListener(
       Messages.FRONT_END_MESSAGE,
       this.processFrontEndMessage.bind(this)
     )
 
-    // Listen for budget messages
+    // Budget messages
     this.simulation.addEventListener(
       Messages.BUDGET_NEEDED,
       this.handleMandatoryBudget.bind(this)
     )
 
-    // Listen for tool clicks
+    // Tool clicks
     this.inputStatus.addEventListener(
       Messages.TOOL_CLICKED,
       this.handleTool.bind(this)
     )
 
-    // And pauses
+    // Pause
     this.inputStatus.addEventListener(
       Messages.SPEED_CHANGE,
       this.handlePause.bind(this)
     )
 
-    // And date changes
-    // XXX Not yet activated
+    // Date changes
 
-    this.simulation.addEventListener(Messages.DATE_UPDATED, this.onDateChange.bind(this))
+    this.simulation.addEventListener(
+      Messages.DATE_UPDATED, this.onDateChange.bind(this)
+    )
 
     this.infoBar = InfoBar(
       'cclass',
@@ -428,30 +434,24 @@ class Game {
       'date',
       'name'
     )
-    const initialValues = {
-      classification: this.simulation.evaluation.cityClass,
-      population: this.simulation.evaluation.cityPop,
-      score: this.simulation.evaluation.cityScore,
-      funds: this.simulation.budget.totalFunds,
-      date: this.simulation.getDate(),
-      name: this.name,
-    }
-    this.infoBar(this.simulation, initialValues)
+
+    this.resetInfoBar()
 
     this._notificationBar = new Notification(
       '#notifications',
       this.gameCanvas
-    // Text.messageText[Messages.WELCOME]
+      // Text.messageText[Messages.WELCOME]
     )
 
     // Track when various milestones are first reached
     this._reachedTown =
-    this._reachedCity =
-    this._reachedCapital =
-    this._reachedMetropolis =
-    this._reacedMegalopolis =
-    false
+      this._reachedCity =
+      this._reachedCapital =
+      this._reachedMetropolis =
+      this._reacedMegalopolis =
+      false
 
+    // Congrats window
 
     // this.congratsWindow = new CongratsWindow(opacityLayerID, 'congratsWindow')
     // this.congratsWindow.addEventListener(
@@ -463,17 +463,85 @@ class Game {
     // this.touchListener = touchListener.bind(this)
     // window.addEventListener('touchstart', this.touchListener, false)
 
-    /*
+    // Select tileset
+
     const $tileSelect = $('#tilesetSelect')
-    $tileSelect.on('change', (e) => {
-      const name = e.target.value
-      this.setTileset(name)
+    if ($tileSelect.length) {
+      $tileSelect?.on('change', (e) => {
+        const name = e.target.value
+        this.setTileset(name)
+      })
+      if ($tileSelect.val() !== 'classic') $tileSelect.val('classic')
+    }
+
+    /**
+     * Save
+     */
+    const $export = $('#exportButton')
+    $export.on('click', () => {
+
+      const data = {
+        name: this.name,
+        everClicked: this.everClicked
+      }
+      BaseTool.save(data)
+      this.simulation.save(data)
+      Storage.saveGame(data)
+
+      console.log('Save', data)
+
+      const a = document.createElement('a')
+      a.download = 'microcity.json'
+      a.href = 'data:text/json;charset=utf-8,'
+        + encodeURIComponent(JSON.stringify(data))
+      a.click()
     })
-    if ($tileSelect.val() !== 'earth') $tileSelect.val('earth')
-  */
+
+    /**
+     * Load
+     */
+    const $import = $('#importButton')
+    const $importFileInput = $('#importFileInput')
+
+    $import.on('click', (e) => {
+      $importFileInput.click()
+    })
+
+    $importFileInput.on('change', ({ target: { files } }) => {
+      const reader = new FileReader()
+      reader.onload = ({ target: { result } }) => {
+        try {
+
+          const data = JSON.parse(result)
+          const map = MapGenerator(data.width, data.height)
+
+          this.reload(map, data)
+
+        } catch (e) {
+          //
+        }
+      }
+      reader.onerror = e => console.error(e)
+      reader.readAsText(files[0])
+    })
+
+    /**
+     * New game
+     */
+    const $newGame = $('#newGameButton')
+    $newGame.on('click', () => {
+
+      const map = MapGenerator(120, 100)
+      const data = {
+        name: 'Microcity',
+        everClicked: false,
+        map
+      }
+      this.reload(map, data)
+    })
 
     // Unhide controls
-    this.revealControls()
+    // this.revealControls()
 
     this._notificationBar._element.toggle() // Hide welcome notification
 
@@ -496,20 +564,39 @@ class Game {
   }
 
   save() {
-    const saveData = { name: this.name, everClicked: this.everClicked }
-    BaseTool.save(saveData)
-    this.simulation.save(saveData)
-
-    // console.log('Save', saveData)
-
-    Storage.saveGame(saveData)
+    const data = { name: this.name, everClicked: this.everClicked }
+    BaseTool.save(data)
+    this.simulation.save(data)
+    Storage.saveGame(data)
   }
 
-  load(saveData) {
-    this.name = saveData.name
-    this.everClicked = saveData.everClicked
-    BaseTool.load(saveData)
-    this.simulation.load(saveData)
+  loadInitial(data) {
+    this.name = data.name
+    this.everClicked = data.everClicked
+    BaseTool.load(data)
+    this.simulation.load(data)
+    Storage.saveGame(data)
+  }
+
+  reload(map, data) {
+    this.gameMap = map
+    // The order is important
+    this.simulation.reset(map)
+    this.loadInitial(data)
+    this.gameCanvas.reset(map)
+    this.simulation.init()
+    this.resetInfoBar()
+  }
+
+  resetInfoBar() {
+    this.infoBar(this.simulation, {
+      classification: this.simulation.evaluation.cityClass,
+      population: this.simulation.evaluation.cityPop,
+      score: this.simulation.evaluation.cityScore,
+      funds: this.simulation.budget.totalFunds,
+      date: this.simulation.getDate(),
+      name: this.name,
+    })  
   }
 
   revealControls() {
@@ -558,11 +645,11 @@ class Game {
 
     // return
 
-  // if (date.month % 6 === 0) {
-  //   this.setTileset(
-  //     tileNames[Math.round(Math.random() * tileNames.length)]
-  //   )
-  // }
+    // if (date.month % 6 === 0) {
+    //   this.setTileset(
+    //     tileNames[Math.round(Math.random() * tileNames.length)]
+    //   )
+    // }
   }
 
 
@@ -711,7 +798,7 @@ class Game {
         break
 
       default:
-    // $('#toolOutput').html('Tools')
+      // $('#toolOutput').html('Tools')
     }
   }
 
@@ -723,9 +810,9 @@ class Game {
   }
 
   handlePause() {
-  // XXX Currently only offer pause and run to the user
-  // No real difference among the speeds until we optimise
-  // the sim
+    // XXX Currently only offer pause and run to the user
+    // No real difference among the speeds until we optimise
+    // the sim
     this.isPaused = !this.isPaused
 
     if (this.isPaused) this.simulation.setSpeed(Simulation.SPEED_PAUSED)
@@ -744,7 +831,7 @@ class Game {
     }
 
     if (this.inputStatus.escape) {
-    // We need to handle escape, as InputStatus won't know what dialogs are showing
+      // We need to handle escape, as InputStatus won't know what dialogs are showing
       if (this.dialogOpen) {
         this.dialogOpen = false
         this[this._openWindow].close()
@@ -800,18 +887,18 @@ class Game {
 
       if (
         this.lastBadMessageTime === null
-      || d - this.lastBadMessageTime > disasterTimeout
+        || d - this.lastBadMessageTime > disasterTimeout
       ) {
         this.lastBadMessageTime = null
         this._notificationBar.goodNews(message)
-      // ./text.ts, messageText[Messages.REACHED_CITY] = 'Population has reached
+        // ./text.ts, messageText[Messages.REACHED_CITY] = 'Population has reached
       }
 
       if (cMessage !== this.name + ' is now a ') {
         console.log('Congratulations', cMessage)
-      //   this.dialogOpen = true
-      //   this._openWindow = 'congratsWindow'
-      //   this.congratsWindow.open(cMessage)
+        //   this.dialogOpen = true
+        //   this._openWindow = 'congratsWindow'
+        //   this.congratsWindow.open(cMessage)
       }
 
       return
@@ -836,7 +923,7 @@ class Game {
     if (Text.neutralMessages[subject] !== undefined) {
       if (
         this.lastBadMessageTime === null
-      || d - this.lastBadMessageTime > disasterTimeout
+        || d - this.lastBadMessageTime > disasterTimeout
       ) {
         this.lastBadMessageTime = null
         this._notificationBar.news(message)
@@ -848,8 +935,8 @@ class Game {
   }
 
   calculateMouseForPaint() {
-  // Determine whether we need to draw a tool outline in the
-  // canvas
+    // Determine whether we need to draw a tool outline in the
+    // canvas
     let mouse = null
 
     if (this.inputStatus.mouseX !== -1 && this.inputStatus.toolWidth > 0) {

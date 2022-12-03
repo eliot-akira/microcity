@@ -68,7 +68,6 @@ class GameCanvas {
     spriteSheet,
     animationManager
   ) {
-    animationManager = animationManager || new AnimationManager(map)
 
     if (arguments.length < 3) {
       throw new Error(
@@ -82,8 +81,9 @@ class GameCanvas {
     this._spriteSheet = spriteSheet
     this._tileSet = tileSet
     const w = this._tileSet.tileWidth
+
     this._map = map
-    this.animationManager = new AnimationManager(map)
+    this.animationManager = animationManager || new AnimationManager(map)
 
     if (this._canvas.width < w || this._canvas.height < w) { throw new Error('Canvas too small!') }
 
@@ -118,6 +118,38 @@ class GameCanvas {
     window.addEventListener('resize', onResize, false)
 
     // Order is important here. ready must be set before the call to centreOn below
+    this.ready = true
+    this.centreOn(
+      Math.floor(this._map.width / 2),
+      Math.floor(this._map.height / 2)
+    )
+
+    this.paint(null, null)
+  }
+
+  reset(map) {
+    this._map = map
+    // An array indexed by tile offset containing the tileValue last painted there
+    this._lastPaintedTiles = null
+    this._currentPaintedTiles = [] // for future use
+
+    // Last time we painted, the canvas was this many tiles wide and tall
+    this._lastPaintedWidth = -1
+    this._lastPaintedHeight = -1
+
+    // Last time we painted, the canvas was this wide and tall in pixels (determines whether we
+    // can safely call putImageData)
+    this._lastCanvasWidth = -1
+    this._lastCanvasHeight = -1
+
+    // After painting tiles, we store the image data here before painting sprites and mousebox
+    this._lastCanvasData = null
+
+    this._calculateDimensions()
+
+    // Have the dimensions changed since the last paint?
+    this._pendingDimensionChange = false
+
     this.ready = true
     this.centreOn(
       Math.floor(this._map.width / 2),
@@ -300,7 +332,8 @@ class GameCanvas {
     const tileX = this._originX + Math.floor(x / this._tileSet.tileWidth / this.zoomRatio)
     const tileY = this._originY + Math.floor(y / this._tileSet.tileWidth / this.zoomRatio)
 
-    console.log([x, y], [tileX, tileY])
+    // console.log([x, y], [tileX, tileY])
+
     return {
       x: tileX,
       y: tileY,

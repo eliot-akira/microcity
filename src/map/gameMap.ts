@@ -74,7 +74,9 @@ const saveProps = [
 ]
 
 GameMap.prototype.save = function (saveData) {
-  for (let i = 0, l = saveProps.length; i < l; i++) { saveData[saveProps[i]] = this[saveProps[i]] }
+  for (let i = 0, l = saveProps.length; i < l; i++) {
+    saveData[saveProps[i]] = this[saveProps[i]]
+  }
 
   saveData.map = this._data.map(function (t) {
     return { value: t.getRawValue() }
@@ -82,10 +84,18 @@ GameMap.prototype.save = function (saveData) {
 }
 
 GameMap.prototype.load = function (saveData) {
-  for (var i = 0, l = saveProps.length; i < l; i++) { this[saveProps[i]] = saveData[saveProps[i]] }
+  for (var i = 0, l = saveProps.length; i < l; i++) {
+    this[saveProps[i]] = saveData[saveProps[i]] || this[saveProps[i]]
+  }
 
   const map = saveData.map
-  for (i = 0, l = map.length; i < l; i++) { this.setTileValue(i % this.width, Math.floor(i / this.width), map[i].value) }
+  for (i = 0, l = map.length; i < l; i++) {
+    this.setTileValue(
+      i % this.width,
+      Math.floor(i / this.width),
+      map[i].value
+    )
+  }
 }
 
 GameMap.prototype._calculateIndex = function (x, y) {
@@ -227,7 +237,6 @@ GameMap.prototype.getTileValuesForPainting = function (x, y, w, h, result) {
 
   const width = this.width
   const height = this.height
-
   // Result is stored in row-major order
   for (let a = y, ylim = y + h; a < ylim; a++) {
     for (let b = x, xlim = x + w; b < xlim; b++) {
@@ -237,6 +246,9 @@ GameMap.prototype.getTileValuesForPainting = function (x, y, w, h, result) {
       }
 
       const tileIndex = b + a * width
+
+      if (!this._data[tileIndex]) console.log(tileIndex, width, height, this._data)
+
       result[(a - y) * w + (b - x)] = this._data[tileIndex].getRawValue()
     }
   }

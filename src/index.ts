@@ -39,13 +39,16 @@ function createGame(tileSet, spriteSheet) {
   const mapWidth = 120 // 120
   const mapHeight = 100 // 100
 
-  const map = MapGenerator(mapWidth, mapHeight)
+  let map = MapGenerator(mapWidth, mapHeight)
+  let savedGame
 
-  const savedGame = Storage.canStore && Storage.getSavedGame()
+  if (Storage.canStore && (savedGame = Storage.getSavedGame())) {
+    map = savedGame
+  }
 
   // Launch a new game
   const game = new Game({
-    map: savedGame || map,
+    map,
     tileSet,
     spriteSheet,
     difficulty: Simulation.LEVEL_EASY

@@ -94,7 +94,9 @@ Census.prototype.save = function (saveData) {
 }
 
 Census.prototype.load = function (saveData) {
-  for (let i = 0, l = saveProps.length; i < l; i++) { this[saveProps[i]] = saveData[saveProps[i]] }
+  for (let i = 0, l = saveProps.length; i < l; i++) {
+    this[saveProps[i]] = saveData[saveProps[i]] || this[saveProps[i]]
+  }
 }
 
 Census.prototype.take10Census = function (budget) {

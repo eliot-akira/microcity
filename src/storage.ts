@@ -25,6 +25,9 @@ const saveGame = function (gameData) {
   window.localStorage.setItem(this.KEY, gameData)
 }
 
+const clear = function() {
+  window.localStorage.removeItem(this.KEY)
+}
 const transitionOldSave = function (savedGame) {
   switch (savedGame.version) {
     case 1:
@@ -47,6 +50,7 @@ const transitionOldSave = function (savedGame) {
 const Storage = {
   getSavedGame,
   saveGame,
+  clear,
   transitionOldSave,
 }
 

@@ -1,6 +1,6 @@
 // import { Config } from './config'
 import { Game } from '../game'
-import { MapGenerator } from './mapGenerator'
+import { MapGenerator } from '../map/mapGenerator'
 import { Simulation } from '../simulation'
 // import { SplashCanvas } from './splashCanvas'
 import { Storage } from '../storage'

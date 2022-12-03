@@ -25,46 +25,7 @@ const TERRAIN_LAKE_LEVEL = -1
 const TERRAIN_CURVE_LEVEL = -1
 const ISLAND_RADIUS = 18
 
-const MapGenerator = function (w, h) {
-  w = w || 120 // 120
-  h = h || 100 // 100
-
-  TERRAIN_CREATE_ISLAND = Random.getRandom(2) - 1
-
-  const map = new GameMap(w, h)
-
-  // Construct land.
-  if (TERRAIN_CREATE_ISLAND < 0) {
-    if (Random.getRandom(100) < 10) {
-      makeIsland(map)
-      return map
-    }
-  }
-
-  if (TERRAIN_CREATE_ISLAND === 1) makeNakedIsland(map)
-  else clearMap(map)
-
-  // Lay a river.
-  if (TERRAIN_CURVE_LEVEL !== 0) {
-    const terrainXStart = 40 + Random.getRandom(map.width - 80)
-    const terrainYStart = 33 + Random.getRandom(map.height - 67)
-
-    const terrainPos = new Position(terrainXStart, terrainYStart)
-    doRivers(map, terrainPos)
-  }
-
-  // Lay a few lakes.
-  if (TERRAIN_LAKE_LEVEL !== 0) makeLakes(map)
-
-  smoothRiver(map)
-
-  // And add trees.
-  if (TERRAIN_TREE_LEVEL !== 0) doTrees(map)
-
-  return map
-}
-
-var clearMap = function (map) {
+const clearMap = function (map) {
   for (let x = 0; x < map.width; x++) {
     for (let y = 0; y < map.height; y++) {
       map.setTile(x, y, DIRT, 0)
@@ -471,6 +432,45 @@ const smoothWater = function (map) {
       }
     }
   }
+}
+
+const MapGenerator = function (w, h) {
+  w = w || 120 // 120
+  h = h || 100 // 100
+
+  TERRAIN_CREATE_ISLAND = Random.getRandom(2) - 1
+
+  const map = new GameMap(w, h)
+
+  // Construct land.
+  if (TERRAIN_CREATE_ISLAND < 0) {
+    if (Random.getRandom(100) < 10) {
+      makeIsland(map)
+      return map
+    }
+  }
+
+  if (TERRAIN_CREATE_ISLAND === 1) makeNakedIsland(map)
+  else clearMap(map)
+
+  // Lay a river.
+  if (TERRAIN_CURVE_LEVEL !== 0) {
+    const terrainXStart = 40 + Random.getRandom(map.width - 80)
+    const terrainYStart = 33 + Random.getRandom(map.height - 67)
+
+    const terrainPos = new Position(terrainXStart, terrainYStart)
+    doRivers(map, terrainPos)
+  }
+
+  // Lay a few lakes.
+  if (TERRAIN_LAKE_LEVEL !== 0) makeLakes(map)
+
+  smoothRiver(map)
+
+  // And add trees.
+  if (TERRAIN_TREE_LEVEL !== 0) doTrees(map)
+
+  return map
 }
 
 export { MapGenerator }
