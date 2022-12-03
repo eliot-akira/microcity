@@ -2,14 +2,15 @@
 
 ## Improve
 
-- Screenshot too big by zoomRatio
-- Inefficiency in DOM queries - For example, `$('.selected')`, `$(this.canvasID)`
+- Correctly redraw canvas on zoom out
+- More efficient DOM queries - For example, reduce repeated calls of `$('.selected')`, `$(this.canvasID)`
+- x Screenshot too big by zoomRatio
 
 ## Develop features
 
 - Generate new city
 - Export/import city
-- Control panel with tool icons
+- [x] Control panel with tool icons
 - Mouse and touch drag to move around the map 
 - Macintosh-style scroll bar for map
 - Overviews

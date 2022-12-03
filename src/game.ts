@@ -463,6 +463,12 @@ class Game {
     // this.touchListener = touchListener.bind(this)
     // window.addEventListener('touchstart', this.touchListener, false)
 
+    // Unhide controls
+    // this.revealControls()
+
+    this._notificationBar._element.toggle() // Hide welcome notification
+
+
     // Select tileset
 
     const $tileSelect = $('#tilesetSelect')
@@ -540,10 +546,17 @@ class Game {
       this.reload(map, data)
     })
 
-    // Unhide controls
-    // this.revealControls()
+    /**
+     * Zoom
+     */
+    $('#zoomInButton').on('click', () => {
+      this.gameCanvas.zoomIn()
+    })
+    $('#zoomOutButton').on('click', () => {
+      this.gameCanvas.zoomOut()
+    })
 
-    this._notificationBar._element.toggle() // Hide welcome notification
+
 
     // Run the sim
     this.tick = tick.bind(this)
@@ -580,11 +593,13 @@ class Game {
 
   reload(map, data) {
     this.gameMap = map
+
     // The order is important
     this.simulation.reset(map)
     this.loadInitial(data)
-    this.gameCanvas.reset(map)
     this.simulation.init()
+
+    this.gameCanvas.reset(map)
     this.resetInfoBar()
   }
 

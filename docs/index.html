@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Microcity</title>
-  <link rel="stylesheet" href="./index.min.css" />
+  <link rel="stylesheet" href="./index.min.css?1670099249050" />
 </head>
 
 <body class="font-pixels">
@@ -24,16 +25,17 @@
           <div class="semibold chunk">
             <span id="name">Microcity</span>
           </div>
-          <div>
+          <div style="margin: 6px 0"></div>
+          <div class="text-sm">
             <span id="date">-</span>
           </div>
-          <div class="elided">Funds $<span id="funds"></span></div>
+          <!-- <div class="elided">Funds $<span id="funds"></span></div> -->
           <!-- <div class="elided">Score: <span id="score">0</span></div> -->
-          <div>
+          <div class="text-sm">
             <span id="cclass"></span> <span id="population">0</span>
           </div>
 
-<div style="margin: 6px 0"></div>
+          <div style="margin: 6px 0"></div>
 
           <button id="bulldozerButton" data-size="1" data-tool="bulldozer" data-colour="salmon" class="toolButton unselected" title="Bulldozer">
             <img src="images/tools/bulldozer.png" alt="Bulldozer">
@@ -69,16 +71,16 @@
             <img src="images/tools/query.png" alt="Query">
           </button>
 
-<!-- <div style="margin: 6px 0"></div> -->
+          <!-- <div style="margin: 6px 0"></div> -->
 
-<!-- <select id="tilesetSelect" name="tileset">
-  <option value="asia">Asia</option>
+          <!-- <select id="tilesetSelect" name="tileset">
   <option value="classic">Classic</option>
   <option value="earth" selected>Earth</option>
   <option value="future">Future</option>
-  <option value="medieval">Medieval</option>
   <option value="moon">Moon</option>
   <option value="snow">Snow</option>
+  <option value="asia">Asia</option>
+  <option value="medieval">Medieval</option>
   <option value="wild-west">Wild west</option>
 </select> -->
 
@@ -101,10 +103,35 @@
             Pause
           </button> -->
 
+          <div class="text-sm game-actions">
+            <button id="newGameButton" class="toolButton unselected">
+              New
+            </button>
+
+            <input id="importFileInput" type="file" name="importJson" accept=".json" style="display:none" />
+            <button id="importButton" class="toolButton unselected">
+              Load
+            </button>
+            <button id="exportButton" class="toolButton unselected">
+              Save
+            </button>
+          </div>
+
+          <div class="text-sm game-actions">
+            Zoom
+            <button id="zoomInButton" class="toolButton unselected">
+              +
+            </button>
+
+            <button id="zoomOutButton" class="toolButton unselected">
+              -
+            </button>
+          </div>
 
           <div style="margin: 6px 0"></div>
 
           <div id="notifications"></div>
+
           <div id="toolInfo" class="alignCenter">
             <span id="toolOutput"></span>
           </div>
@@ -474,7 +501,7 @@
   </div>
 
   <script src="./vendor/jquery-3.6.1.min.js"></script>
-  <script src="./index.min.js"></script>
+  <script src="./index.min.js?1670099249050"></script>
 </body>
 
 </html>
