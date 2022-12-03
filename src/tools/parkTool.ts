@@ -10,6 +10,9 @@ const ParkTool = makeTool(function (map) {
 })
 
 ParkTool.prototype.doTool = function (x, y, blockMaps) {
+
+  this.doAutoBulldoze(x, y)
+
   if (this._worldEffects.getTileValue(x, y) !== DIRT) {
     this.result = this.TOOLRESULT_NEEDS_BULLDOZE
     return

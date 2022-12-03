@@ -11,9 +11,12 @@ class GameCanvas {
   static DEFAULT_ID = 'microcity-canvas'
 
   constructor(id, parentNode, zoomRatio = 1.4) {
-  // if (!(this instanceof GameCanvas)) { return new GameCanvas(id, parentNode, width, height) }
 
-    if (arguments.length < 1) { throw new Error('Attempt to construct a GameCanvas with no parameters') }
+    // if (!(this instanceof GameCanvas)) { return new GameCanvas(id, parentNode, width, height) }
+
+    if (arguments.length < 1) {
+      throw new Error('Attempt to construct a GameCanvas with no parameters')
+    }
 
     // Argument shuffling
     if (parentNode === undefined) {
@@ -51,7 +54,9 @@ class GameCanvas {
     // Remove any existing element with the same id
     const current = document.getElementById(id)
     if (current !== null) {
-      if (current.parentNode === parentNode) { parentNode.replaceChild(this._canvas, current) } else throw new Error('ID ' + id + ' already exists in document!')
+      if (current.parentNode === parentNode) {
+        parentNode.replaceChild(this._canvas, current)
+      } else throw new Error('ID ' + id + ' already exists in document!')
     } else parentNode.appendChild(this._canvas)
 
     this.ready = false
@@ -288,14 +293,14 @@ class GameCanvas {
 
     if (!this.ready) throw new Error('Not ready!')
 
-    const relativeWidth = this.canvasWidth*this.zoomRatio
-    const relativeHeight = this.canvasHeight*this.zoomRatio
+    const relativeWidth = this.canvasWidth * this.zoomRatio
+    const relativeHeight = this.canvasHeight * this.zoomRatio
     if (x >= relativeWidth || y >= relativeHeight) return null
 
     const tileX = this._originX + Math.floor(x / this._tileSet.tileWidth / this.zoomRatio)
     const tileY = this._originY + Math.floor(y / this._tileSet.tileWidth / this.zoomRatio)
-    
-    console.log([x, y], [tileX,tileY])
+
+    console.log([x, y], [tileX, tileY])
     return {
       x: tileX,
       y: tileY,
@@ -312,8 +317,8 @@ class GameCanvas {
 
     if (!this.ready) throw new Error('Not ready!')
 
-    const relativeWidth = this.canvasWidth*this.zoomRatio
-    const relativeHeight = this.canvasHeight*this.zoomRatio
+    const relativeWidth = this.canvasWidth * this.zoomRatio
+    const relativeHeight = this.canvasHeight * this.zoomRatio
     if (x >= relativeWidth || y >= relativeHeight) return null
 
     x = this._originX + Math.floor(x / this._tileSet.tileWidth / this.zoomRatio)

@@ -17,7 +17,7 @@ import { RepairManager } from './repairManager'
 import { Residential } from './residential'
 import { Road } from './road'
 import { SpriteManager } from './sprites/spriteManager'
-import { Stadia } from './stadia'
+import { Stadium } from './stadium'
 import { Traffic } from './traffic'
 import { Transport } from './transport'
 import { Valves } from './valves'
@@ -191,12 +191,12 @@ Simulation.prototype._simFrame = function () {
       console.warn('Unexpected speed (' + this._speed + '): defaulting to slow')
   }
 
-  const d = new Date()
+  const d = new Date().getTime()
   if (d - this._lastTickTime < threshold) return
 
   const simData = this._constructSimData()
   this._simulate(simData)
-  this._lastTickTime = new Date()
+  this._lastTickTime = new Date().getTime()
 }
 
 Simulation.prototype._clearCensus = function () {
@@ -306,7 +306,7 @@ Simulation.prototype.init = function () {
   this._powerManager.registerHandlers(this._mapScanner, this._repairManager)
   Road.registerHandlers(this._mapScanner, this._repairManager)
   Residential.registerHandlers(this._mapScanner, this._repairManager)
-  Stadia.registerHandlers(this._mapScanner, this._repairManager)
+  Stadium.registerHandlers(this._mapScanner, this._repairManager)
   Transport.registerHandlers(this._mapScanner, this._repairManager)
 
   const simData = this._constructSimData()
@@ -341,7 +341,9 @@ const simulate = function (simData) {
 
       this._cityTime++
 
-      if ((this._simCycle & 1) === 0) { this._valves.setValves(this._gameLevel, this._census, this.budget) }
+      if ((this._simCycle & 1) === 0) {
+        this._valves.setValves(this._gameLevel, this._census, this.budget)
+      }
 
       this._clearCensus()
       break
@@ -362,9 +364,13 @@ const simulate = function (simData) {
       break
 
     case 9:
-      if (this._cityTime % CENSUS_FREQUENCY_10 === 0) { this._census.take10Census(budget) }
+      if (this._cityTime % CENSUS_FREQUENCY_10 === 0) {
+        this._census.take10Census(this.budget)
+      }
 
-      if (this._cityTime % CENSUS_FREQUENCY_120 === 0) { this._census.take120Census(budget) }
+      if (this._cityTime % CENSUS_FREQUENCY_120 === 0) {
+        this._census.take120Census(this.budget)
+      }
 
       if (this._cityTime % TAX_FREQUENCY === 0) {
         this.budget.collectTax(this._gameLevel, this._census)
@@ -578,7 +584,7 @@ Simulation.prototype._sendMessages = function () {
     case 54:
       if (
         this.budget.roadEffect
-          < Math.floor((5 * this.budget.MAX_ROAD_EFFECT) / 8)
+        < Math.floor((5 * this.budget.MAX_ROAD_EFFECT) / 8)
         && this._census.roadTotal > 30
       ) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
@@ -590,7 +596,7 @@ Simulation.prototype._sendMessages = function () {
     case 57:
       if (
         this.budget.fireEffect
-          < Math.floor((7 * this.budget.MAX_FIRE_STATION_EFFECT) / 10)
+        < Math.floor((7 * this.budget.MAX_FIRE_STATION_EFFECT) / 10)
         && this._census.totalPop > 20
       ) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {
@@ -602,7 +608,7 @@ Simulation.prototype._sendMessages = function () {
     case 60:
       if (
         this.budget.policeEffect
-          < Math.floor((7 * this.budget.MAX_POLICE_STATION_EFFECT) / 10)
+        < Math.floor((7 * this.budget.MAX_POLICE_STATION_EFFECT) / 10)
         && this._census.totalPop > 20
       ) {
         this._emitEvent(Messages.FRONT_END_MESSAGE, {

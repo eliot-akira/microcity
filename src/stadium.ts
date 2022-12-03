@@ -30,7 +30,7 @@ const fullStadiumFound = function (map, x, y, simData) {
   }
 }
 
-const Stadia = {
+const Stadium = {
   registerHandlers: function (mapScanner, repairManager) {
     mapScanner.addAction(STADIUM, emptyStadiumFound)
     mapScanner.addAction(FULLSTADIUM, fullStadiumFound)
@@ -38,4 +38,4 @@ const Stadia = {
   },
 }
 
-export { Stadia }
+export { Stadium }

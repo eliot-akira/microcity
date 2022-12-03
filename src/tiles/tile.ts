@@ -1,17 +1,18 @@
 import * as TileFlags from './tileFlags'
 import { DIRT, TILE_COUNT, TILE_INVALID } from './tileValues'
 
-// I think I want to change this soon. Most of the tile properties, (e.g. whether
-// it is a zone, population, conductiveness, pollution emitted) are completely defined
-// by the tile value. I think we want a set of prototype objects that are essentially
-// immutable, and a TileCreator() function that returns an object with the correct proto
-// tile, where mutable state such as animation can live.
-//
-// This would allow us to cull the getTile/getValue pattern repeated ad nauseum all over the
-// code. One could also have the map then track zones, so that populationDensityScan no longer
-// needs to perform another full map scan.
+/*
+Consider changing logic below.
+Most tile properties, (e.g. whether it is a zone, population, conductiveness,
+pollution emitted) are completely defined by the tile value.  We may want a set
+of prototype objects that are essentially immutable, and a TileCreator()
+function that returns an object with the correct proto tile, where mutable
+state such as animation can live.
 
-type TilePredicateKey = {[K in keyof Tile]: Tile[K] extends () => boolean ? K : never; }[keyof Tile];
+This would allow us to cull the getTile/getValue pattern all over the code.
+One could also have the map then track zones, so that populationDensityScan
+no longer needs to perform another full map scan.
+*/
 
 export class Tile {
 
@@ -112,7 +113,9 @@ export class Tile {
   }
 
   toString(): string {
-    const qualities = ['animated', 'bulldozable', 'combustible', 'conductive', 'powered', 'zone']
+    const qualities = [
+      'animated', 'bulldozable', 'combustible', 'conductive', 'powered', 'zone'
+    ]
     const qualitiesText = qualities.map((quality) => this.getQualityText(quality)).join(', ')
 
     const tileValue = this.getValue()
@@ -125,8 +128,8 @@ export class Tile {
     return `${quality}: ${this.summariseBoolean(qualityValue)}`
   }
 
-  private predicateForQuality(quality: string): TilePredicateKey {
-    return `is${quality[0].toUpperCase()}${quality.slice(1)}` as TilePredicateKey
+  private predicateForQuality(quality: string) {
+    return `is${quality[0].toUpperCase()}${quality.slice(1)}`
   }
 
   private summariseBoolean(bool: boolean): string {
