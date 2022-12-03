@@ -1,7 +1,7 @@
-import { Random } from '../random'
+import { getRandom, getRandom16, getChance } from '../utils'
+import { ZoneUtils } from '../zones/zoneUtils'
 import { TileUtils } from './tileUtils'
 import { DIRT, IZB, RADTILE } from './tileValues'
-import { ZoneUtils } from '../zones/zoneUtils'
 
 const xDelta = [-1, 0, 1, 0]
 const yDelta = [0, -1, 0, 1]
@@ -9,11 +9,11 @@ const yDelta = [0, -1, 0, 1]
 const fireFound = function (map, x, y, simData) {
   simData.census.firePop += 1
 
-  if ((Random.getRandom16() & 3) !== 0) return
+  if ((getRandom16() & 3) !== 0) return
 
   // Try to set neighbouring tiles on fire as well
   for (let i = 0; i < 4; i++) {
-    if (Random.getChance(7)) {
+    if (getChance(7)) {
       const xTem = x + xDelta[i]
       const yTem = y + yDelta[i]
 
@@ -36,18 +36,18 @@ const fireFound = function (map, x, y, simData) {
 
   // Compute likelyhood of fire running out of fuel
   let rate = 10 // Likelyhood of extinguishing (bigger means less chance)
-  let i = simData.blockMaps.fireStationEffectMap.worldGet(x, y)
+  const i = simData.blockMaps.fireStationEffectMap.worldGet(x, y)
 
   if (i > 100) rate = 1
   else if (i > 20) rate = 2
   else if (i > 0) rate = 3
 
   // Decide whether to put out the fire.
-  if (Random.getRandom(rate) === 0) map.setTo(x, y, TileUtils.randomRubble())
+  if (getRandom(rate) === 0) map.setTo(x, y, TileUtils.randomRubble())
 }
 
 const radiationFound = function (map, x, y, simData) {
-  if (Random.getChance(4095)) map.setTile(x, y, DIRT, 0)
+  if (getChance(4095)) map.setTile(x, y, DIRT, 0)
 }
 
 const floodFound = function (map, x, y, simData) {

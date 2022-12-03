@@ -1,10 +1,10 @@
-import { AnimationManager } from './tiles/animationManager'
-import { GameMap } from './map/gameMap'
-import { MiscUtils } from './utils'
+import { AnimationManager } from '../tiles/animationManager'
+import { GameMap } from '../map/gameMap'
+import { MiscUtils } from '../utils'
 import { MouseBox } from './mouseBox'
-import { Position } from './map/position'
-import { TileSet } from './tiles/tileSet'
-import { TILE_INVALID } from './tiles/tileValues'
+import { Position } from '../map/position'
+import { TileSet } from '../tiles/tileSet'
+import { TILE_INVALID } from '../tiles/tileValues'
 
 class GameCanvas {
 

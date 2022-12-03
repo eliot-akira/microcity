@@ -4,9 +4,8 @@ import { CopterSprite } from './copterSprite'
 import { EventEmitter } from '../eventEmitter'
 import { ExplosionSprite } from './explosionSprite'
 import * as Messages from '../messages'
-import { MiscUtils } from '../utils'
+import { MiscUtils, getRandom, getChance } from '../utils'
 import { MonsterSprite } from './monsterSprite'
-import { Random } from '../random'
 import * as SpriteConstants from './spriteConstants'
 import { SpriteUtils } from './spriteUtils'
 import { CHANNEL, RIVER } from '../tiles/tileValues'
@@ -114,8 +113,8 @@ SpriteManager.prototype.makeTornado = function () {
     return
   }
 
-  const x = Random.getRandom(SpriteUtils.worldToPix(this.map.width) - 800) + 400
-  const y = Random.getRandom(SpriteUtils.worldToPix(this.map.height) - 200) + 100
+  const x = getRandom(SpriteUtils.worldToPix(this.map.width) - 800) + 400
+  const y = getRandom(SpriteUtils.worldToPix(this.map.height) - 200) + 100
 
   sprite = this.makeSprite(SpriteConstants.SPRITE_TORNADO, x, y)
   this._emitEvent(Messages.TORNADO_SIGHTED, {
@@ -148,7 +147,7 @@ SpriteManager.prototype.generateTrain = function (census, x, y) {
   if (
     census.totalPop > 10
     && this.getSprite(SpriteConstants.SPRITE_TRAIN) === null
-    && Random.getRandom(25) === 0
+    && getRandom(25) === 0
   ) {
     this.makeSprite(
       SpriteConstants.SPRITE_TRAIN,
@@ -163,7 +162,7 @@ SpriteManager.prototype.generateShip = function () {
   // place a channel tile on the edges of the map
   let x, y
 
-  if (Random.getChance(3)) {
+  if (getChance(3)) {
     for (x = 4; x < this.map.width - 2; x++) {
       if (this.map.getTileValue(x, 0) === CHANNEL) {
         this.makeShipHere(x, 0)
@@ -172,7 +171,7 @@ SpriteManager.prototype.generateShip = function () {
     }
   }
 
-  if (Random.getChance(3)) {
+  if (getChance(3)) {
     for (y = 1; y < this.map.height - 2; y++) {
       if (this.map.getTileValue(0, y) === CHANNEL) {
         this.makeShipHere(0, y)
@@ -181,7 +180,7 @@ SpriteManager.prototype.generateShip = function () {
     }
   }
 
-  if (Random.getChance(3)) {
+  if (getChance(3)) {
     for (x = 4; x < this.map.width - 2; x++) {
       if (this.map.getTileValue(x, this.map.height - 1) === CHANNEL) {
         this.makeShipHere(x, this.map.height - 1)
@@ -190,7 +189,7 @@ SpriteManager.prototype.generateShip = function () {
     }
   }
 
-  if (Random.getChance(3)) {
+  if (getChance(3)) {
     for (y = 1; y < this.map.height - 2; y++) {
       if (this.map.getTileValue(this.map.width - 1, y) === CHANNEL) {
         this.makeShipHere(this.map.width - 1, y)
@@ -260,8 +259,8 @@ SpriteManager.prototype.makeMonster = function () {
 
   let done = 0
   for (let i = 0; i < 300; i++) {
-    const x = Random.getRandom(this.map.width - 20) + 10
-    const y = Random.getRandom(this.map.height - 10) + 5
+    const x = getRandom(this.map.width - 20) + 10
+    const y = getRandom(this.map.height - 10) + 5
 
     const tile = this.map.getTile(x, y)
     if (tile.getValue() === RIVER) {

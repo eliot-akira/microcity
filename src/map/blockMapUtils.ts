@@ -1,8 +1,7 @@
 import { BlockMap } from './blockMap'
 import { Commercial } from '../zones/commercial'
 import { Industrial } from '../zones/industrial'
-import { MiscUtils } from '../utils'
-import { Random } from '../random'
+import { MiscUtils, getChance } from '../utils'
 import { Residential } from '../zones/residential'
 import * as TileValues from '../tiles/tileValues'
 
@@ -258,7 +257,7 @@ const pollutionTerrainLandValueScan = function (map, census, blockMaps) {
         // if we have multiple competitors for most polluted)
         if (
           pollution > maxPollution
-          || (pollution === maxPollution && Random.getChance(3))
+          || (pollution === maxPollution && getChance(3))
         ) {
           maxPollution = pollution
           map.pollutionMaxX = x

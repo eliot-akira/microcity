@@ -1,4 +1,4 @@
-import { Random } from '../random'
+import { getChance, getRandom, getRandom16 } from '../utils'
 import { SPRITE_SHIP } from '../sprites/spriteConstants'
 import { ANIMBIT, CONDBIT, BURNBIT } from '../tiles/tileFlags'
 import { TileUtils } from '../tiles/tileUtils'
@@ -9,13 +9,13 @@ const railFound = function (map, x, y, simData) {
   simData.spriteManager.generateTrain(simData.census, x, y)
 
   if (simData.budget.shouldDegradeRoad()) {
-    if (Random.getChance(511)) {
+    if (getChance(511)) {
       const currentTile = map.getTile(x, y)
 
       // Don't degrade tiles with power lines
       if (currentTile.isConductive()) return
 
-      if (simData.budget.roadEffect < (Random.getRandom16() & 31)) {
+      if (simData.budget.roadEffect < (getRandom16() & 31)) {
         const mapValue = currentTile.getValue()
 
         // Replace bridge tiles with water, otherwise rubble
@@ -32,12 +32,12 @@ const airportFound = function (map, x, y, simData) {
   if (tile.isPowered()) {
     if (map.getTileValue(x + 1, y - 1) === TileValues.RADAR) { map.setTile(x + 1, y - 1, TileValues.RADAR0, CONDBIT | ANIMBIT | BURNBIT) }
 
-    if (Random.getRandom(5) === 0) {
+    if (getRandom(5) === 0) {
       simData.spriteManager.generatePlane(x, y)
       return
     }
 
-    if (Random.getRandom(12) === 0) simData.spriteManager.generateCopter(x, y)
+    if (getRandom(12) === 0) simData.spriteManager.generateCopter(x, y)
   } else {
     map.setTile(x + 1, y - 1, TileValues.RADAR, CONDBIT | BURNBIT)
   }

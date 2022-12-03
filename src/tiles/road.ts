@@ -1,4 +1,4 @@
-import { Random } from '../random'
+import { getRandom16, getChance } from '../utils'
 import { Tile } from './tile'
 import { ANIMBIT, BIT_MASK, BULLBIT } from './tileFlags'
 import * as TileValues from './tileValues'
@@ -91,7 +91,7 @@ const doBridge = function (map, x, y, currentTile, simData) {
   if (currentTile === TileValues.BRWV) {
     // We have an open vertical bridge. Possibly close it.
     if (
-      Random.getChance(3)
+      getChance(3)
       && simData.spriteManager.getBoatDistance(x, y) > 340
     ) {
       closeBridge(
@@ -111,7 +111,7 @@ const doBridge = function (map, x, y, currentTile, simData) {
   if (currentTile == TileValues.BRWH) {
     // We have an open horizontal bridge. Possibly close it.
     if (
-      Random.getChance(3)
+      getChance(3)
       && simData.spriteManager.getBoatDistance(x, y) > 340
     ) {
       closeBridge(
@@ -130,7 +130,7 @@ const doBridge = function (map, x, y, currentTile, simData) {
 
   if (
     simData.spriteManager.getBoatDistance(x, y) < 300
-    || Random.getChance(7)
+    || getChance(7)
   ) {
     if (currentTile & 1) {
       if (x < map.width - 1) {
@@ -185,12 +185,12 @@ const roadFound = function (map, x, y, simData) {
   const tileValue = currentTile.getValue()
 
   if (simData.budget.shouldDegradeRoad()) {
-    if (Random.getChance(511)) {
+    if (getChance(511)) {
       currentTile = map.getTile(x, y)
 
       // Don't degrade tiles with power lines
       if (!currentTile.isConductive()) {
-        if (simData.budget.roadEffect < (Random.getRandom16() & 31)) {
+        if (simData.budget.roadEffect < (getRandom16() & 31)) {
           const mapValue = currentTile.getValue()
 
           // Replace bridge tiles with water, otherwise rubble

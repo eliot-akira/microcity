@@ -5,7 +5,7 @@ import {
 } from './direction'
 import { GameMap } from './gameMap'
 import { Position } from './position'
-import { Random } from '../random'
+import { getRandom, getERandom } from '../utils'
 import { BLBNBIT, BULLBIT } from '../tiles/tileFlags'
 import {
   CHANNEL,
@@ -57,10 +57,10 @@ var makeNakedIsland = function (map) {
   }
 
   for (x = 0; x < map.width - 5; x += 2) {
-    let mapY = Random.getERandom(terrainIslandRadius)
+    let mapY = getERandom(terrainIslandRadius)
     plopBRiver(map, new Position(x, mapY))
 
-    mapY = map.height - 10 - Random.getERandom(terrainIslandRadius)
+    mapY = map.height - 10 - getERandom(terrainIslandRadius)
     plopBRiver(map, new Position(x, mapY))
 
     plopSRiver(map, new Position(x, 0))
@@ -68,10 +68,10 @@ var makeNakedIsland = function (map) {
   }
 
   for (y = 0; y < map.height - 5; y += 2) {
-    let mapX = Random.getERandom(terrainIslandRadius)
+    let mapX = getERandom(terrainIslandRadius)
     plopBRiver(map, new Position(mapX, y))
 
-    mapX = map.width - 10 - Random.getERandom(terrainIslandRadius)
+    mapX = map.width - 10 - getERandom(terrainIslandRadius)
     plopBRiver(map, new Position(mapX, y))
 
     plopSRiver(map, new Position(0, y))
@@ -87,12 +87,12 @@ var makeIsland = function (map) {
 
 var makeLakes = function (map) {
   let numLakes
-  if (TERRAIN_LAKE_LEVEL < 0) numLakes = Random.getRandom(10)
+  if (TERRAIN_LAKE_LEVEL < 0) numLakes = getRandom(10)
   else numLakes = TERRAIN_LAKE_LEVEL / 2
 
   while (numLakes > 0) {
-    const x = Random.getRandom(map.width - 21) + 10
-    const y = Random.getRandom(map.height - 20) + 10
+    const x = getRandom(map.width - 21) + 10
+    const y = getRandom(map.height - 20) + 10
 
     makeSingleLake(map, new Position(x, y))
     numLakes--
@@ -100,16 +100,16 @@ var makeLakes = function (map) {
 }
 
 var makeSingleLake = function (map, pos) {
-  let numPlops = Random.getRandom(12) + 2
+  let numPlops = getRandom(12) + 2
 
   while (numPlops > 0) {
     const plopPos = new Position(
       pos,
-      Random.getRandom(12) - 6,
-      Random.getRandom(12) - 6
+      getRandom(12) - 6,
+      getRandom(12) - 6
     )
 
-    if (Random.getRandom(4)) plopSRiver(map, plopPos)
+    if (getRandom(4)) plopSRiver(map, plopPos)
     else plopBRiver(map, plopPos)
 
     numPlops--
@@ -119,8 +119,8 @@ var makeSingleLake = function (map, pos) {
 const treeSplash = function (map, x, y) {
   let numTrees
 
-  if (TERRAIN_TREE_LEVEL < 0) numTrees = Random.getRandom(150) + 50
-  else numTrees = Random.getRandom(100 + TERRAIN_TREE_LEVEL * 2) + 50
+  if (TERRAIN_TREE_LEVEL < 0) numTrees = getRandom(150) + 50
+  else numTrees = getRandom(100 + TERRAIN_TREE_LEVEL * 2) + 50
 
   let treePos = new Position(x, y)
 
@@ -139,12 +139,12 @@ const treeSplash = function (map, x, y) {
 var doTrees = function (map) {
   let amount
 
-  if (TERRAIN_TREE_LEVEL < 0) amount = Random.getRandom(100) + 50
+  if (TERRAIN_TREE_LEVEL < 0) amount = getRandom(100) + 50
   else amount = TERRAIN_TREE_LEVEL + 3
 
   for (let x = 0; x < amount; x++) {
-    const xloc = Random.getRandom(map.width - 1)
-    const yloc = Random.getRandom(map.height - 1)
+    const xloc = getRandom(map.width - 1)
+    const yloc = getRandom(map.height - 1)
     treeSplash(map, xloc, yloc)
   }
 
@@ -195,7 +195,7 @@ var smoothRiver = function (map) {
         }
 
         let temp = riverEdges[bitIndex & 15]
-        if (temp !== RIVER && Random.getRandom(1)) temp++
+        if (temp !== RIVER && getRandom(1)) temp++
 
         map.setTileValue(x, y, temp, 0)
       }
@@ -265,11 +265,11 @@ var doBRiver = function (map, pos, riverDir, terrainDir) {
 
   while (map.testBounds(pos.x + 4, pos.y + 4)) {
     plopBRiver(map, pos)
-    if (Random.getRandom(rate1) < 10) {
+    if (getRandom(rate1) < 10) {
       terrainDir = riverDir
     } else {
-      if (Random.getRandom(rate2) > 90) { terrainDir = terrainDir.rotateClockwise() }
-      if (Random.getRandom(rate2) > 90) { terrainDir = terrainDir.rotateCounterClockwise() }
+      if (getRandom(rate2) > 90) { terrainDir = terrainDir.rotateClockwise() }
+      if (getRandom(rate2) > 90) { terrainDir = terrainDir.rotateCounterClockwise() }
     }
     pos = Position.move(pos, terrainDir)
   }
@@ -290,11 +290,11 @@ var doSRiver = function (map, pos, riverDir, terrainDir) {
 
   while (map.testBounds(pos.x + 3, pos.y + 3)) {
     plopSRiver(map, pos)
-    if (Random.getRandom(rate1) < 10) {
+    if (getRandom(rate1) < 10) {
       terrainDir = riverDir
     } else {
-      if (Random.getRandom(rate2) > 90) { terrainDir = terrainDir.rotateClockwise() }
-      if (Random.getRandom(rate2) > 90) { terrainDir = terrainDir.rotateCounterClockwise() }
+      if (getRandom(rate2) > 90) { terrainDir = terrainDir.rotateClockwise() }
+      if (getRandom(rate2) > 90) { terrainDir = terrainDir.rotateCounterClockwise() }
     }
     pos = Position.move(pos, terrainDir)
   }
@@ -438,13 +438,13 @@ const MapGenerator = function (w, h) {
   w = w || 120 // 120
   h = h || 100 // 100
 
-  TERRAIN_CREATE_ISLAND = Random.getRandom(2) - 1
+  TERRAIN_CREATE_ISLAND = getRandom(2) - 1
 
   const map = new GameMap(w, h)
 
   // Construct land.
   if (TERRAIN_CREATE_ISLAND < 0) {
-    if (Random.getRandom(100) < 10) {
+    if (getRandom(100) < 10) {
       makeIsland(map)
       return map
     }
@@ -455,8 +455,8 @@ const MapGenerator = function (w, h) {
 
   // Lay a river.
   if (TERRAIN_CURVE_LEVEL !== 0) {
-    const terrainXStart = 40 + Random.getRandom(map.width - 80)
-    const terrainYStart = 33 + Random.getRandom(map.height - 67)
+    const terrainXStart = 40 + getRandom(map.width - 80)
+    const terrainYStart = 33 + getRandom(map.height - 67)
 
     const terrainPos = new Position(terrainXStart, terrainYStart)
     doRivers(map, terrainPos)

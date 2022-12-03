@@ -1,7 +1,6 @@
 import { BaseSprite } from './baseSprite'
 import { SPRITE_DYING, SPRITE_MOVED, SOUND_MONSTER } from '../messages'
-import { MiscUtils } from '../utils'
-import { Random } from '../random'
+import { MiscUtils, getRandom, getRandom16, getChance } from '../utils'
 import * as SpriteConstants from './spriteConstants'
 import { SpriteUtils } from './spriteUtils'
 import { TileUtils } from '../tiles/tileUtils'
@@ -89,15 +88,15 @@ MonsterSprite.prototype.move = function (
     dir = SpriteUtils.getDir(this.x, this.y, this.destX, this.destY)
     dir = Math.floor((dir - 1) / 2)
 
-    if (dir !== currentDir && Random.getChance(10)) {
-      if (Random.getRandom16() & 1) frame = cardinals1[currentDir]
+    if (dir !== currentDir && getChance(10)) {
+      if (getRandom16() & 1) frame = cardinals1[currentDir]
       else frame = cardinals2[currentDir]
 
       currentDir = 4
 
       if (!this.soundCount) {
         this._emitEvent(SOUND_MONSTER)
-        this.soundCount = 50 + Random.getRandom(100)
+        this.soundCount = 50 + getRandom(100)
       }
     }
   } else {
@@ -106,8 +105,8 @@ MonsterSprite.prototype.move = function (
     dir = this.frame
     frame = (dir - 13) & 3
 
-    if (!(Random.getRandom16() & 3)) {
-      if (Random.getRandom16() & 1) frame = diagonals1[frame]
+    if (!(getRandom16() & 3)) {
+      if (getRandom16() & 1) frame = diagonals1[frame]
       else frame = diagonals2[frame]
 
       // We mung currentDir and frame here to

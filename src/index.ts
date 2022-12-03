@@ -2,8 +2,8 @@ import { Config } from './config'
 import { TileSet } from './tiles/tileSet'
 import { MapGenerator } from './map/mapGenerator'
 import { Simulation } from './simulation'
-import { Storage } from './storage'
-import { Game } from './game'
+import { Storage } from './interface/storage'
+import { Game } from './interface/game'
 
 const tiles = document.getElementById('tiles')
 const sprites = document.getElementById('sprites')

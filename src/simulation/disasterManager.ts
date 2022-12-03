@@ -1,7 +1,6 @@
 import { EventEmitter } from '../eventEmitter'
 import * as Messages from '../messages'
-import { MiscUtils } from '../utils'
-import { Random } from '../random'
+import { MiscUtils, getChance, getRandom } from '../utils'
 import { SPRITE_AIRPLANE } from '../sprites/spriteConstants'
 import { TileUtils } from '../tiles/tileUtils'
 import * as TileValues from '../tiles/tileValues'
@@ -25,8 +24,8 @@ DisasterManager.prototype.doDisasters = function (census) {
 
   if (!this.disastersEnabled) return
 
-  if (!Random.getRandom(DisChance[this._gameLevel])) {
-    switch (Random.getRandom(8)) {
+  if (!getRandom(DisChance[this._gameLevel])) {
+    switch (getRandom(8)) {
       case 0:
       case 1:
         this.setFire()
@@ -87,7 +86,7 @@ const vulnerable = function (tile) {
 
 // User initiated earthquake
 DisasterManager.prototype.makeEarthquake = function () {
-  const strength = Random.getRandom(700) + 300
+  const strength = getRandom(700) + 300
   this.doEarthquake(strength)
 
   this._emitEvent(Messages.EARTHQUAKE, {
@@ -96,8 +95,8 @@ DisasterManager.prototype.makeEarthquake = function () {
   })
 
   for (let i = 0; i < strength; i++) {
-    const x = Random.getRandom(this._map.width - 1)
-    const y = Random.getRandom(this._map.height - 1)
+    const x = getRandom(this._map.width - 1)
+    const y = getRandom(this._map.height - 1)
 
     if (!this._map.testBounds(x, y)) continue
 
@@ -113,8 +112,8 @@ DisasterManager.prototype.setFire = function (times, zonesOnly) {
   zonesOnly = zonesOnly || false
 
   for (let i = 0; i < times; i++) {
-    const x = Random.getRandom(this._map.width - 1)
-    const y = Random.getRandom(this._map.height - 1)
+    const x = getRandom(this._map.width - 1)
+    const y = getRandom(this._map.height - 1)
 
     if (!this._map.testBounds(x, y)) continue
 
@@ -140,8 +139,8 @@ DisasterManager.prototype.makeCrash = function () {
     return
   }
 
-  const x = Random.getRandom(this._map.width - 1)
-  const y = Random.getRandom(this._map.height - 1)
+  const x = getRandom(this._map.width - 1)
+  const y = getRandom(this._map.height - 1)
   this._spriteManager.generatePlane(x, y)
   s = this._spriteManager.getSprite(SPRITE_AIRPLANE)
   s.explodeSprite()
@@ -157,8 +156,8 @@ const Dy = [-1, 0, 1, 0]
 
 DisasterManager.prototype.makeFlood = function () {
   for (let i = 0; i < 300; i++) {
-    const x = Random.getRandom(this._map.width - 1)
-    const y = Random.getRandom(this._map.height - 1)
+    const x = getRandom(this._map.width - 1)
+    const y = getRandom(this._map.height - 1)
     if (!this._map.testBounds(x, y)) continue
 
     let tileValue = this._map.getTileValue(x, y)
@@ -195,7 +194,7 @@ DisasterManager.prototype.doFlood = function (x, y, blockMaps) {
   if (this._floodCount > 0) {
     // Flood is not over yet
     for (let i = 0; i < 4; i++) {
-      if (Random.getChance(7)) {
+      if (getChance(7)) {
         const xx = x + Dx[i]
         const yy = y + Dy[i]
 
@@ -210,13 +209,13 @@ DisasterManager.prototype.doFlood = function (x, y, blockMaps) {
           ) {
             if (tile.isZone()) ZoneUtils.fireZone(this._map, xx, yy, blockMaps)
 
-            this._map.setTile(xx, yy, TileValues.FLOOD + Random.getRandom(2), 0)
+            this._map.setTile(xx, yy, TileValues.FLOOD + getRandom(2), 0)
           }
         }
       }
     }
   } else {
-    if (Random.getChance(15)) this._map.setTile(x, y, TileValues.DIRT, 0)
+    if (getChance(15)) this._map.setTile(x, y, TileValues.DIRT, 0)
   }
 }
 
@@ -237,8 +236,8 @@ DisasterManager.prototype.doMeltdown = function (x, y) {
 
   // Add lots of radiation tiles around the plant
   for (let i = 0; i < 200; i++) {
-    dX = x - 20 + Random.getRandom(40)
-    dY = y - 15 + Random.getRandom(30)
+    dX = x - 20 + getRandom(40)
+    dY = y - 15 + getRandom(30)
 
     if (!this._map.testBounds(dX, dY)) continue
 

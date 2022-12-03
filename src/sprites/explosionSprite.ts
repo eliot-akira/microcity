@@ -1,7 +1,6 @@
 import { BaseSprite } from './baseSprite'
 import { EXPLOSION_REPORTED, SOUND_EXPLOSIONHIGH } from '../messages'
 import { MiscUtils } from '../utils'
-import { Random } from '../random'
 import { SPRITE_EXPLOSION } from './spriteConstants'
 import { SpriteUtils } from './spriteUtils'
 import { TileUtils } from '../tiles/tileUtils'

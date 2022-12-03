@@ -1,7 +1,6 @@
 import { forEachCardinalDirection } from '../map/direction'
-import { MiscUtils } from '../utils'
+import { MiscUtils, getRandom } from '../utils'
 import { Position } from '../map/position'
-import { Random } from '../random'
 import { SPRITE_HELICOPTER } from '../sprites/spriteConstants'
 import { SpriteUtils } from '../sprites/spriteUtils'
 import { TileUtils } from '../tiles/tileUtils'
@@ -55,7 +54,7 @@ Traffic.prototype.addToTrafficDensityMap = function (blockMaps) {
       trafficDensityMap.worldSet(pos.x, pos.y, traffic)
 
       // Attract traffic copter to the traffic
-      if (traffic >= 240 && Random.getRandom(5) === 0) {
+      if (traffic >= 240 && getRandom(5) === 0) {
         const sprite = this._spriteManager.getSprite(SPRITE_HELICOPTER)
         if (sprite !== null) {
           sprite.destX = SpriteUtils.worldToPix(pos.x)
@@ -141,7 +140,7 @@ Traffic.prototype.tryGo = function (pos, dirLast) {
     return directions[0]
   }
 
-  const index = Random.getRandom(directions.length - 1)
+  const index = getRandom(directions.length - 1)
   return directions[index]
 }
 

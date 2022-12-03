@@ -1,7 +1,6 @@
 import { BaseSprite } from './baseSprite'
 import { SPRITE_DYING, SPRITE_MOVED } from '../messages'
-import { MiscUtils } from '../utils'
-import { Random } from '../random'
+import { MiscUtils, getRandom } from '../utils'
 import { SpriteConstants } from './spriteConstants'
 import { SpriteUtils } from './spriteUtils'
 
@@ -62,13 +61,13 @@ TornadoSprite.prototype.move = function (
     }
   }
 
-  frame = Random.getRandom(5)
+  frame = getRandom(5)
   this.x += xDelta[frame]
   this.y += yDelta[frame]
 
   if (this.spriteNotInBounds()) this.frame = 0
 
-  if (this.count !== 0 && Random.getRandom(500) === 0) this.frame = 0
+  if (this.count !== 0 && getRandom(500) === 0) this.frame = 0
 
   if (this.frame === 0) this._emitEvent(SPRITE_DYING)
 

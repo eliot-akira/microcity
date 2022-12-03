@@ -1,7 +1,7 @@
 import { MiscUtils } from '../utils'
 import { TileUtils } from '../tiles/tileUtils'
 import { DIRT, HBRIDGE, LASTTINYEXP, TINYEXP } from '../tiles/tileValues'
-import { WorldEffects } from '../stats/worldEffects'
+import { WorldEffects } from '../simulation/worldEffects'
 
 const init = function (cost, map, shouldAutoBulldoze, isDraggable) {
   isDraggable = isDraggable || false

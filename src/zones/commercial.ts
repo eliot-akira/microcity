@@ -1,7 +1,7 @@
-import { Random } from '../random'
+import { getChance, getRandom, getRandom16Signed } from '../utils'
 import { TileUtils } from '../tiles/tileUtils'
 import { COMCLR, CZB } from '../tiles/tileValues'
-import { Traffic } from '../stats/traffic'
+import { Traffic } from '../simulation/traffic'
 import { ZoneUtils } from './zoneUtils'
 
 // There are 20 types of commercial zone aside from the empty zone. They reflect 5 different categories of
@@ -77,7 +77,7 @@ const commercialFound = function (map, x, y, simData) {
   // increases as the population increases). Growth naturally stalls if consumers cannot reach the shops.
   // Note in particular, we will never take this branch if the zone is empty.
   let trafficOK = Traffic.ROUTE_FOUND
-  if (population > Random.getRandom(5)) {
+  if (population > getRandom(5)) {
     // Try to find a route from here to an industrial zone
     trafficOK = simData.trafficManager.makeTraffic(
       x,
@@ -95,7 +95,7 @@ const commercialFound = function (map, x, y, simData) {
   }
 
   // Occasionally assess and perhaps modify the tile
-  if (Random.getChance(7)) {
+  if (getChance(7)) {
     const locationScore =
       trafficOK === Traffic.NO_ROAD_FOUND
         ? -3000
@@ -120,7 +120,7 @@ const commercialFound = function (map, x, y, simData) {
     if (
       zonePower
       && zoneScore > -350
-      && zoneScore - 26380 > Random.getRandom16Signed()
+      && zoneScore - 26380 > getRandom16Signed()
     ) {
       lpValue = ZoneUtils.getLandPollutionValue(simData.blockMaps, x, y)
       growZone(map, x, y, simData.blockMaps, population, lpValue, zonePower)
@@ -131,7 +131,7 @@ const commercialFound = function (map, x, y, simData) {
     // There is a 7.3% chance of getRandom16() always yielding a number > 27994 which would take this branch.
     // There is a 82.5% chance of the number being below 21316 thus never triggering this branch, which leaves a
     // 10.1% chance of this branch being conditional on zoneScore.
-    if (zoneScore < 350 && zoneScore + 26380 < Random.getRandom16Signed()) {
+    if (zoneScore < 350 && zoneScore + 26380 < getRandom16Signed()) {
       lpValue = ZoneUtils.getLandPollutionValue(simData.blockMaps, x, y)
       degradeZone(map, x, y, simData.blockMaps, population, lpValue, zonePower)
     }

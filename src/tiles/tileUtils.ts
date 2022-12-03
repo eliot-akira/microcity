@@ -1,4 +1,4 @@
-import { Random } from '../random'
+import { getRandom16 } from '../utils'
 import { Tile } from './tile'
 import { ANIMBIT, BULLBIT } from './tileFlags'
 import * as TileValues from './tileValues'
@@ -78,11 +78,11 @@ const normalizeRoad = unwrapTile(function (tile) {
 })
 
 const randomFire = function () {
-  return new Tile(TileValues.FIRE + (Random.getRandom16() & 3), ANIMBIT)
+  return new Tile(TileValues.FIRE + (getRandom16() & 3), ANIMBIT)
 }
 
 const randomRubble = function () {
-  return new Tile(TileValues.RUBBLE + (Random.getRandom16() & 3), BULLBIT)
+  return new Tile(TileValues.RUBBLE + (getRandom16() & 3), BULLBIT)
 }
 
 const TileUtils = {

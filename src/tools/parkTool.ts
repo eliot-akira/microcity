@@ -1,5 +1,5 @@
 import { BaseTool } from './baseTool'
-import { Random } from '../random'
+import { getRandom } from '../utils'
 import { ANIMBIT, BULLBIT, BURNBIT, CONDBIT } from '../tiles/tileFlags'
 import { TileUtils } from '../tiles/tileUtils'
 import { DIRT, FOUNTAIN, WOODS2 } from '../tiles/tileValues'
@@ -18,7 +18,7 @@ ParkTool.prototype.doTool = function (x, y, blockMaps) {
     return
   }
 
-  const value = Random.getRandom(4)
+  const value = getRandom(4)
   let tileFlags = BURNBIT | BULLBIT
   let tileValue
 

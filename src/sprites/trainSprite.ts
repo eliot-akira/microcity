@@ -1,7 +1,6 @@
 import { BaseSprite } from './baseSprite'
 import { TRAIN_CRASHED } from '../messages'
-import { MiscUtils } from '../utils'
-import { Random } from '../random'
+import { MiscUtils, getRandom16 } from '../utils'
 import { SPRITE_TRAIN } from './spriteConstants'
 import { SpriteUtils } from './spriteUtils'
 import * as TileValues from '../tiles/tileValues'
@@ -61,7 +60,7 @@ TrainSprite.prototype.move = function (
   // Find a new direction.
   if ((spriteCycle & 3) === 0) {
     // Choose a random starting point for our search
-    const dir = Random.getRandom16() & 3
+    const dir = getRandom16() & 3
 
     for (let i = dir; i < dir + 4; i++) {
       const dir2 = i & 3

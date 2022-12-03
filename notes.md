@@ -1,8 +1,9 @@
 # Notes
 
+
 ## Improve
 
-- Correctly redraw canvas on zoom out
+- Correctly redraw canvas on zoom in beyond 1
 - More efficient DOM queries - For example, reduce repeated calls of `$('.selected')`, `$(this.canvasID)`
 - x Screenshot too big by zoomRatio
 

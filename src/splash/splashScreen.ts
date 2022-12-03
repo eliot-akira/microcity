@@ -1,9 +1,9 @@
 // import { Config } from './config'
-import { Game } from '../game'
+import { Game } from '../interface/game'
 import { MapGenerator } from '../map/mapGenerator'
-import { Simulation } from '../simulation'
+import { Simulation } from '../../stats/simulation'
 // import { SplashCanvas } from './splashCanvas'
-import { Storage } from '../storage'
+import { Storage } from '../interface/storage'
 
 /**
  * Unused

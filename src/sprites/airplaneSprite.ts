@@ -1,7 +1,6 @@
 import { BaseSprite } from './baseSprite'
 import { PLANE_CRASHED } from '../messages'
-import { MiscUtils } from '../utils'
-import { Random } from '../random'
+import { MiscUtils, getRandom } from '../utils'
 import { SPRITE_AIRPLANE, SPRITE_HELICOPTER } from './spriteConstants'
 import { SpriteUtils } from './spriteUtils'
 
@@ -57,8 +56,8 @@ AirplaneSprite.prototype.move = function (
   )
   if (absDist < 50) {
     // We're pretty close to the destination
-    this.destX = Random.getRandom(SpriteUtils.worldToPix(this.map.width)) + 8
-    this.destY = Random.getRandom(SpriteUtils.worldToPix(this.map.height)) + 8
+    this.destX = getRandom(SpriteUtils.worldToPix(this.map.width)) + 8
+    this.destY = getRandom(SpriteUtils.worldToPix(this.map.height)) + 8
   }
 
   if (disasterManager.enableDisasters) {

@@ -1,31 +1,31 @@
-import { BaseTool } from './tools/baseTool'
-import { BudgetWindow } from './windows/budgetWindow'
-import { Config } from './config'
-import { CongratsWindow } from './windows/congratsWindow'
-import { DebugWindow } from './windows/debugWindow'
-import { DisasterWindow } from './windows/disasterWindow'
-import { EvaluationWindow } from './windows/evaluationWindow'
+import { BaseTool } from '../tools/baseTool'
+import { BudgetWindow } from '../windows/budgetWindow'
+import { Config } from '../config'
+import { CongratsWindow } from '../windows/congratsWindow'
+import { DebugWindow } from '../windows/debugWindow'
+import { DisasterWindow } from '../windows/disasterWindow'
+import { EvaluationWindow } from '../windows/evaluationWindow'
 import { GameCanvas } from './gameCanvas'
-import { GameMap } from './map/gameMap'
-import { InfoBar } from './windows/infoBar'
+import { GameMap } from '../map/gameMap'
+import { InfoBar } from '../windows/infoBar'
 import { InputStatus } from './inputStatus'
-import { MapGenerator } from './map/mapGenerator'
-import { MonsterTV } from './monsterTV'
-// import { NagWindow } from './nagWindow'
-import { Notification } from './windows/notification'
-import { QueryWindow } from './windows/queryWindow'
-import { Random } from './random'
-import { RCI } from './windows/rci'
-import { SaveWindow } from './windows/saveWindow'
-import { ScreenshotLinkWindow } from './windows/screenshotLinkWindow'
-import { ScreenshotWindow } from './windows/screenshotWindow'
-import { SettingsWindow } from './windows/settingsWindow'
-import { Simulation } from './simulation'
+import { MapGenerator } from '../map/mapGenerator'
+import { MonsterTV } from '../windows/monsterTV'
+// import { NagWindow } from '../nagWindow'
+import { Notification } from '../windows/notification'
+import { QueryWindow } from '../windows/queryWindow'
+import { RCI } from '../windows/rci'
+import { SaveWindow } from '../windows/saveWindow'
+import { ScreenshotLinkWindow } from '../windows/screenshotLinkWindow'
+import { ScreenshotWindow } from '../windows/screenshotWindow'
+import { SettingsWindow } from '../windows/settingsWindow'
+import { Simulation } from '../simulation'
 import { Storage } from './storage'
-import { Text } from './messages/text'
-import { TileSet } from './tiles/tileSet'
-import { TouchWarnWindow } from './windows/touchWarnWindow'
-import * as Messages from './messages'
+import { Text } from '../messages/text'
+import { TileSet } from '../tiles/tileSet'
+import { TouchWarnWindow } from '../windows/touchWarnWindow'
+import * as Messages from '../messages'
+import { getChance } from '../utils'
 
 let ticks = 0
 
@@ -611,7 +611,7 @@ class Game {
       funds: this.simulation.budget.totalFunds,
       date: this.simulation.getDate(),
       name: this.name,
-    })  
+    })
   }
 
   revealControls() {
@@ -654,7 +654,7 @@ class Game {
 
   onDateChange(date) {
 
-    // if (date.month === 10 && Random.getChance(10))
+    // if (date.month === 10 && getChance(10))
     //   this.gameCanvas.changeTileSet(this.snowTileSet)
     // else if (date.month === 1) this.gameCanvas.changeTileSet(this.tileSet)
 

@@ -1,8 +1,8 @@
-import { EventEmitter } from './eventEmitter'
+import { EventEmitter } from '../eventEmitter'
 import { GameCanvas } from './gameCanvas'
-import { GameTools } from './tools/gameTools'
-import * as Messages from './messages'
-import { MiscUtils } from './utils'
+import { GameTools } from '../tools/gameTools'
+import * as Messages from '../messages'
+import { MiscUtils } from '../utils'
 
 const canvasID = '#' + GameCanvas.DEFAULT_ID
 const toolOutputID = '#toolOutput'

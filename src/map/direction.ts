@@ -1,4 +1,4 @@
-import { Random } from '../random'
+import { getRandom } from '../utils'
 
 export type DirectionFn = (direction: Direction) => void;
 
@@ -80,6 +80,6 @@ export function getRandomDirection(): Direction {
 
 function getRandomDirectionFrom(directionArray: Direction[]): Direction {
   const maxIndex = directionArray.length - 1
-  const index = Random.getRandom(maxIndex)
+  const index = getRandom(maxIndex)
   return directionArray[index]
 }

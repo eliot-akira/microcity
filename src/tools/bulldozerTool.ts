@@ -1,11 +1,11 @@
 import { ConnectingTool } from './connectingTool'
 import { EventEmitter } from '../eventEmitter'
 import { SOUND_EXPLOSIONLOW, SOUND_EXPLOSIONHIGH } from '../messages'
-import { Random } from '../random'
 import { ANIMBIT, BULLBIT } from '../tiles/tileFlags'
 import { TileUtils } from '../tiles/tileUtils'
 import * as TileValues from '../tiles/tileValues'
 import { ZoneUtils } from '../zones/zoneUtils'
+import { getRandom } from '../utils'
 
 const BulldozerTool = EventEmitter(
   ConnectingTool(function (map) {
@@ -22,7 +22,7 @@ BulldozerTool.prototype.putRubble = function (x, y, size) {
           this._worldEffects.setTile(
             xx,
             yy,
-            TileValues.TINYEXP + Random.getRandom(2),
+            TileValues.TINYEXP + getRandom(2),
             ANIMBIT | BULLBIT
           )
         }

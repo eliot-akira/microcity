@@ -1,10 +1,10 @@
 import { Config } from '../config'
-import { Random } from '../random'
+import { getChance, getRandom, getRandom16Signed } from '../utils'
 import { Tile } from '../tiles/tile'
 import { BLBNCNBIT, ZONEBIT } from '../tiles/tileFlags'
 import { TileUtils } from '../tiles/tileUtils'
 import * as TileValues from '../tiles/tileValues'
-import { Traffic } from '../stats/traffic'
+import { Traffic } from '../simulation/traffic'
 import { ZoneUtils } from './zoneUtils'
 
 // Residential tiles have 'populations' of 16, 24, 32 or 40, and value from 0 to 3. The tiles are laid out in
@@ -77,7 +77,7 @@ const buildHouse = function (map, x, y, lpValue) {
     if (score > bestScore) {
       bestScore = score
       best = i
-    } else if (score === bestScore && Random.getChance(7)) {
+    } else if (score === bestScore && getChance(7)) {
       // Ensures we don't always select the same position when we
       // have a choice
       best = i
@@ -88,7 +88,7 @@ const buildHouse = function (map, x, y, lpValue) {
     map.setTile(
       x + xDelta[best],
       y + yDelta[best],
-      TileValues.HOUSE + Random.getRandom(2) + lpValue * 3,
+      TileValues.HOUSE + getRandom(2) + lpValue * 3,
       BLBNCNBIT
     )
   }
@@ -168,7 +168,7 @@ const degradeZone = function (
         map.setTile(
           x,
           y,
-          TileValues.LHTHR + lpValue + Random.getRandom(2),
+          TileValues.LHTHR + lpValue + getRandom(2),
           BLBNCNBIT
         )
       }
@@ -230,7 +230,7 @@ const residentialFound = function (map, x, y, simData) {
   // Occasionally check to see if the zone is connected to the road network. The chance of this happening increases
   // as the zone's population increases. Note: we will never execute this conditional if the zone is empty, as zero
   // will never be be bigger than any of the values Random will generate
-  if (population > Random.getRandom(35)) {
+  if (population > getRandom(35)) {
     // Is there a route from this zone to a commercial zone?
     trafficOK = simData.trafficManager.makeTraffic(
       x,
@@ -249,7 +249,7 @@ const residentialFound = function (map, x, y, simData) {
 
   // Sometimes we will randomly choose to assess this block. However, always assess it if it's empty or contains only
   // single houses.
-  if (tileValue === TileValues.FREEZ || Random.getChance(7)) {
+  if (tileValue === TileValues.FREEZ || getChance(7)) {
     // First, score the individual zone. This is a value in the range -3000 to 3000
     // Then take into account global demand for housing.
     const locationScore = evalResidential(simData.blockMaps, x, y, trafficOK)
@@ -267,9 +267,9 @@ const residentialFound = function (map, x, y, simData) {
     // Of those, 9.2% will always be below zoneScore and hence will always take this branch and trigger zone growth.
     // 81.8% of them are above -20880, so nearly 82% of the time, we will never take this branch.
     // Thus, there's approximately a 9% chance that the value will be in the range, and we *might* grow.
-    if (zoneScore > -350 && zoneScore - 26380 > Random.getRandom16Signed()) {
+    if (zoneScore > -350 && zoneScore - 26380 > getRandom16Signed()) {
       // If this zone is empty, and residential demand is strong, we might make a hospital
-      if (population === 0 && Random.getChance(3)) {
+      if (population === 0 && getChance(3)) {
         makeHospital(map, x, y, simData, zonePower)
         return
       }
@@ -285,7 +285,7 @@ const residentialFound = function (map, x, y, simData) {
     // There is a 10.2% chance of getRandom16() always yielding a number > 27994 which would take this branch.
     // There is a 89.7% chance of the number being below 20880 thus never triggering this branch, which leaves a
     // 0.1% chance of this branch being conditional on zoneScore.
-    if (zoneScore < 350 && zoneScore + 26380 < Random.getRandom16Signed()) {
+    if (zoneScore < 350 && zoneScore + 26380 < getRandom16Signed()) {
       // Get an index in the range 0-3 scoring the land desirability and pollution, and degrade to the next
       // lower ranked zone
       lpValue = ZoneUtils.getLandPollutionValue(simData.blockMaps, x, y)
@@ -308,7 +308,7 @@ const hospitalFound = function (map, x, y, simData) {
 
   // Degrade to an empty zone if a hospital is no longer sustainable
   if (simData.census.needHospital === -1) {
-    if (Random.getRandom(20) === 0) {
+    if (getRandom(20) === 0) {
       ZoneUtils.putZone(
         map,
         x,

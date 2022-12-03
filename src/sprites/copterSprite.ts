@@ -4,8 +4,7 @@ import {
   HELICOPTER_CRASHED,
   SOUND_HEAVY_TRAFFIC,
 } from '../messages'
-import { MiscUtils } from '../utils'
-import { Random } from '../random'
+import { MiscUtils, getRandom, getRandom16 } from '../utils'
 import {
   SPRITE_HELICOPTER,
   SPRITE_MONSTER,
@@ -21,8 +20,8 @@ function CopterSprite(map, spriteManager, x, y) {
   this.yOffset = -16
   this.frame = 5
   this.count = 1500
-  this.destX = Random.getRandom(SpriteUtils.worldToPix(map.width)) + 8
-  this.destY = Random.getRandom(SpriteUtils.worldToPix(map.height)) + 8
+  this.destX = getRandom(SpriteUtils.worldToPix(map.width)) + 8
+  this.destY = getRandom(SpriteUtils.worldToPix(map.height)) + 8
   this.origX = x
   this.origY = y
 }
@@ -81,7 +80,7 @@ CopterSprite.prototype.move = function (
     if (x >= 0 && x < this.map.width && y >= 0 && y < this.map.height) {
       if (
         blockMaps.trafficDensityMap.worldGet(x, y) > 170
-        && (Random.getRandom16() & 7) === 0
+        && (getRandom16() & 7) === 0
       ) {
         this._emitEvent(HEAVY_TRAFFIC, { x, y })
         this._emitEvent(SOUND_HEAVY_TRAFFIC)

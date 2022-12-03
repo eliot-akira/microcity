@@ -3,9 +3,9 @@ import { forEachCardinalDirection } from '../map/direction'
 import { EventEmitter } from '../eventEmitter'
 import { Position } from '../map/position'
 import { NOT_ENOUGH_POWER } from '../messages'
-import { Random } from '../random'
 import { ANIMBIT, BURNBIT, CONDBIT, POWERBIT } from '../tiles/tileFlags'
 import { NUCLEAR, POWERPLANT } from '../tiles/tileValues'
+import { getRandom } from '../utils'
 
 const COAL_POWER_STRENGTH = 700
 const NUCLEAR_POWER_STRENGTH = 2000
@@ -116,7 +116,7 @@ PowerManager.prototype.nuclearPowerFound = function (map, x, y, simData) {
   // In original Micropolis code, we bail and don't repair if melting down
   if (
     simData.disasterManager.disastersEnabled
-    && Random.getRandom(meltdownTable[simData.gameLevel]) === 0
+    && getRandom(meltdownTable[simData.gameLevel]) === 0
   ) {
     simData.disasterManager.doMeltdown(x, y)
     return

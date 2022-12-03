@@ -1,4 +1,4 @@
-import { Evaluation } from '../stats/evaluation'
+import { Evaluation } from '../simulation/evaluation'
 import * as Messages from './index'
 import { Simulation } from '../simulation'
 

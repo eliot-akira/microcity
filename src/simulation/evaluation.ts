@@ -4,8 +4,7 @@ import {
   POPULATION_UPDATED,
   SCORE_UPDATED,
 } from '../messages'
-import { MiscUtils } from '../utils'
-import { Random } from '../random'
+import { MiscUtils, getRandom } from '../utils'
 
 var PROBLEMS = [
   'CVP_CRIME',
@@ -131,7 +130,7 @@ Evaluation.prototype.voteProblems = function () {
 
   // Try to acquire up to 100 votes on problems, but bail if it takes too long
   while (voteCount < 100 && loopCount < 600) {
-    var voterProblemTolerance = Random.getRandom(300)
+    var voterProblemTolerance = getRandom(300)
     if (problemData[problem] > voterProblemTolerance) {
       // The voter is upset about this problem
       this.problemVotes[problem].voteCount += 1
@@ -296,7 +295,7 @@ Evaluation.prototype.doVotes = function () {
   this.cityYes = 0
 
   for (var i = 0; i < 100; i++) {
-    var voterExpectation = Random.getRandom(1000)
+    var voterExpectation = getRandom(1000)
     if (this.cityScore > voterExpectation) this.cityYes++
   }
 }
