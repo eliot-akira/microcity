@@ -1,10 +1,10 @@
 # [Microcity](https://github.com/eliot-akira/microcity)
 
-Classic city simulation based on Micropolis
+Miniature city simulation evolved from Micropolis
 
 Demo: [https://eliot-akira.github.io/microcity](https://eliot-akira.github.io/microcity)
 
-![Screenshot](./screenshot.jpg)
+![Screenshot](./screenshot.png)
 
 ## Play
 

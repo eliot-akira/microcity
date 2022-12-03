@@ -1,6 +1,6 @@
 {
   "name": "microcity",
-  "description": "Classic city simulation based on Micropolis",
+  "description": "Miniature city simulation evolved from Micropolis",
   "scripts": {
     "dev": "roll dev",
     "build": "roll build",
@@ -10,7 +10,8 @@
   "tags": [
     "micropolis",
     "simcity",
-    "idle games"
+    "idle games",
+    "city simulation"
   ],
   "dependencies": {
     "preact": "^10.11.3"
