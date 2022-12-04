@@ -14,6 +14,7 @@ import { MonsterTV } from '../windows/monsterTV'
 // import { NagWindow } from '../nagWindow'
 import { Notification } from '../windows/notification'
 import { QueryWindow } from '../windows/queryWindow'
+import { QueryTool } from '../tools/queryTool'
 import { RCI } from '../windows/rci'
 import { SaveWindow } from '../windows/saveWindow'
 import { ScreenshotLinkWindow } from '../windows/screenshotLinkWindow'
@@ -26,6 +27,7 @@ import { TileSet } from '../tiles/tileSet'
 import { TouchWarnWindow } from '../windows/touchWarnWindow'
 import * as Messages from '../messages'
 import { getChance } from '../utils'
+import { BulldozerTool } from '../tools/bulldozerTool'
 
 let ticks = 0
 
@@ -122,10 +124,13 @@ function makeWindowOpenHandler(winName, customFn) {
   customFn = customFn || null
 
   return function () {
+
+    console.log('Open request', this)
     if (this.dialogOpen) {
       console.warn(
         'Request made to open ' + winName + ' window. There is a dialog open!'
       )
+      if (this._openWindow) console.log('Currently open', this._openWindow)
       return
     }
 
@@ -135,6 +140,8 @@ function makeWindowOpenHandler(winName, customFn) {
     let data = []
 
     if (customFn) data = customFn()
+
+    console.log('Open', this._openWindow)
 
     this[win].open.apply(this[win], data)
   }
@@ -233,7 +240,14 @@ class Game {
 
     const opacityLayerID = 'opaque'
 
-    // this.genericDialogClosure = genericDialogClosure.bind(this)
+    // genericDialogClosure = genericDialogClosure.bind(this)
+
+    const genericDialogClosure = () => {
+      console.log('genericDialogClosure', this._openWindow)
+      this.dialogOpen = false
+      this._openWindow = null
+    }
+
 
     // Hook up listeners to open/close evaluation window
     this.handleEvalRequest = makeWindowOpenHandler(
@@ -246,7 +260,7 @@ class Game {
     this.evalWindow = new EvaluationWindow(opacityLayerID, 'evalWindow')
     this.evalWindow.addEventListener(
       Messages.EVAL_WINDOW_CLOSED,
-      this.genericDialogClosure
+      genericDialogClosure
     )
     this.inputStatus.addEventListener(
       Messages.EVAL_REQUESTED,
@@ -354,28 +368,28 @@ class Game {
     )
     this.screenshotLinkWindow.addEventListener(
       Messages.SCREENSHOT_LINK_CLOSED,
-      this.genericDialogClosure
+      genericDialogClosure
     )
 
     // ... the save confirmation window
     this.saveWindow = new SaveWindow(opacityLayerID, 'saveWindow')
     this.saveWindow.addEventListener(
       Messages.SAVE_WINDOW_CLOSED,
-      this.genericDialogClosure
+      genericDialogClosure
     )
 
     // // ... the nag confirmation window
     // this.nagWindow = new NagWindow(opacityLayerID, 'nagWindow')
     // this.nagWindow.addEventListener(
     //   Messages.NAG_WINDOW_CLOSED,
-    //   this.genericDialogClosure
+    //   genericDialogClosure
     // )
 
     // ... the touch warn window
     this.touchWindow = new TouchWarnWindow(opacityLayerID, 'touchWarnWindow')
     this.touchWindow.addEventListener(
       Messages.TOUCH_WINDOW_CLOSED,
-      this.genericDialogClosure
+      genericDialogClosure
     )
 
     // ... and finally the query window
@@ -383,7 +397,7 @@ class Game {
     this.queryWindow = new QueryWindow(opacityLayerID, 'queryWindow')
     this.queryWindow.addEventListener(
       Messages.QUERY_WINDOW_CLOSED,
-      this.genericDialogClosure
+      genericDialogClosure
     )
     this.inputStatus.addEventListener(
       Messages.QUERY_WINDOW_NEEDED,
@@ -456,7 +470,7 @@ class Game {
     // this.congratsWindow = new CongratsWindow(opacityLayerID, 'congratsWindow')
     // this.congratsWindow.addEventListener(
     //   Messages.CONGRATS_WINDOW_CLOSED,
-    //   this.genericDialogClosure
+    //   genericDialogClosure
     // )
 
     // Listen for touches, so we can warn tablet users
@@ -623,12 +637,6 @@ class Game {
     // this._notificationBar.news({ subject: Messages.WELCOME })
     this.rci.update({ residential: 750, commercial: 750, industrial: 750 })
   }
-
-  genericDialogClosure() {
-    this.dialogOpen = false
-    this._openWindow = null
-  }
-
 
   setTileset(name) {
 
@@ -803,19 +811,70 @@ class Game {
 
     switch (tool.result) {
       case tool.TOOLRESULT_NEEDS_BULLDOZE:
-        console.log(Text.toolMessages.needsDoze)
+      // console.log(Text.toolMessages.needsDoze)
+        // this.makeSound('bop')
         // $('#toolOutput').text(Text.toolMessages.needsDoze)
         break
 
       case tool.TOOLRESULT_NO_MONEY:
-        console.log(Text.toolMessages.noMoney)
+      // console.log(Text.toolMessages.noMoney)
         // $('#toolOutput').text(Text.toolMessages.noMoney)
+        // this.makeSound('bop')
         break
 
       default:
+        if (!(tool instanceof QueryTool)) {
+          this.makeSound('rumble', .4)
+        }
       // $('#toolOutput').html('Tools')
     }
   }
+
+  /**
+   * Game sounds
+   */
+
+  audioContext = null
+  audioContextReady = false
+  sounds = {}
+  isPlayingSound = false
+
+  async resumeAudioContext() {
+    if (this.audioContextReady) return
+    if (!this.audioContext) this.audioContext = new AudioContext()
+    if (this.audioContext.state !== 'playing') {
+      await this.audioContext.resume()
+    }
+    this.audioContextReady = true
+  }
+
+  async makeSound(name, playbackRate = 1, duration = 300) {
+    if (this.isPlayingSound) return
+    try {
+      if (!this.audioContextReady) await this.resumeAudioContext()
+      let audioBuffer = this.sounds[name]
+      if (!audioBuffer) {
+        const response = await fetch(`sounds/${name}.wav`)
+        const arrayBuffer = await response.arrayBuffer()
+        audioBuffer = this.sounds[name] = await this.audioContext.decodeAudioData(arrayBuffer)  
+      }
+      const sourceNode = new AudioBufferSourceNode(this.audioContext, {
+        buffer: audioBuffer,
+        playbackRate
+      })
+      sourceNode.connect(this.audioContext.destination)
+      sourceNode.start(0)
+
+      this.isPlayingSound = true
+      setTimeout(() => {
+        this.isPlayingSound = false
+        sourceNode.stop()
+      }, duration + (300*Math.random())) 
+    } catch (e) {
+      // ok
+    }
+  }
+
 
   handleSave() {
     this.save()

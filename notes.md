@@ -15,6 +15,7 @@
 - Mouse and touch drag to move around the map 
 - Macintosh-style scroll bar for map
 - Overviews
+- Sounds
 
 ## Tools
 

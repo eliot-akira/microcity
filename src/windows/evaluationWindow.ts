@@ -2,30 +2,30 @@ import { ModalWindow } from './modalWindow'
 import { EVAL_WINDOW_CLOSED } from '../messages'
 import { Text } from '../messages/text'
 
-var EvaluationWindow = ModalWindow(function () {
+const evaluationFormID = '#evalButtons'
+const evaluationOKID = '#evalOK'
+
+const submit = function (e) {
+  e.preventDefault()
+  this.close()
+}
+
+const EvaluationWindow = ModalWindow(function () {
   $(evaluationFormID).on('submit', submit.bind(this))
 })
-
-var evaluationFormID = '#evalButtons'
-var evaluationOKID = '#evalOK'
 
 EvaluationWindow.prototype.close = function () {
   this._emitEvent(EVAL_WINDOW_CLOSED)
   this._toggleDisplay()
 }
 
-var submit = function (e) {
-  e.preventDefault()
-  this.close()
-}
-
 EvaluationWindow.prototype._populateWindow = function (evaluation) {
   $('#evalYes').text(evaluation.cityYes)
   $('#evalNo').text(100 - evaluation.cityYes)
-  for (var i = 0; i < 4; i++) {
-    var problemNo = evaluation.getProblemNumber(i)
+  for (let i = 0; i < 4; i++) {
+    const problemNo = evaluation.getProblemNumber(i)
     if (problemNo !== null) {
-      var text = Text.problems[problemNo]
+      const text = Text.problems[problemNo]
       $('#evalProb' + (i + 1)).text(text)
       $('#evalProb' + (i + 1)).show()
     } else {

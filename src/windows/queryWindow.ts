@@ -3,18 +3,19 @@ import { QUERY_WINDOW_CLOSED } from '../messages'
 import { ModalWindow } from './modalWindow'
 import { MiscUtils } from '../utils'
 
-const QueryWindow = ModalWindow(function () {
-  this._debugToggled = false
-  $(queryFormID).on('submit', submit.bind(this))
-})
-
-var queryFormID = '#queryForm'
+const queryFormID = '#queryForm'
 const queryOKID = '#queryOK'
 
-var submit = function (e) {
+const submit = function (e) {
   e.preventDefault()
   this.close()
 }
+
+const QueryWindow = ModalWindow(function () {
+  this._debugToggled = false
+  $(queryFormID).on('submit', submit.bind(this))
+  this.$queryOK = $(queryOKID)
+})
 
 QueryWindow.prototype.close = function () {
   this._toggleDisplay()
@@ -28,7 +29,7 @@ QueryWindow.prototype.open = function () {
   }
 
   this._toggleDisplay()
-  $(queryOKID).focus()
+  this.$queryOK.focus()
 }
 
 export { QueryWindow }
