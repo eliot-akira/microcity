@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Microcity</title>
-  <link rel="stylesheet" href="./index.min.css?1670117369763" />
+  <link rel="stylesheet" href="./index.min.css?1671356360568" />
 </head>
 
 <body class="font-pixels">
@@ -22,6 +22,7 @@
       <div id="infobar" class="alignCenter width150 z1">
 
         <div class="inner">
+          <div style="margin: 6px 0"></div>
           <div class="semibold chunk">
             <span id="name">Microcity</span>
           </div>
@@ -57,12 +58,12 @@
             <img src="images/tools/police.png" alt="Police">
           </button><button id="fireButton" data-size="3" data-tool="fire" data-colour="red" class="toolButton unselected" title="Fire">
             <img src="images/tools/fire.png" alt="Fire">
-          </button><button id="stadiumButton" data-size="4" data-tool="stadium" data-colour="indigo" class="toolButton unselected" title="Stadium">
-            <img src="images/tools/stadium.png" alt="Stadium">
           </button><button id="coalButton" data-size="4" data-tool="coal" data-colour="gray" class="toolButton unselected" title="Coal">
             <img src="images/tools/coal.png" alt="Coal">
           </button><button id="nuclearButton" data-size="4" data-tool="nuclear" data-colour="mistyrose" class="toolButton unselected" title="Nuclear">
             <img src="images/tools/nuclear.png" alt="Nuclear">
+          </button><button id="stadiumButton" data-size="4" data-tool="stadium" data-colour="indigo" class="toolButton unselected" title="Stadium">
+            <img src="images/tools/stadium.png" alt="Stadium">
           </button><button id="portButton" data-size="4" data-tool="port" data-colour="dodgerblue" class="toolButton unselected" title="Port">
             <img src="images/tools/port.png" alt="Port">
           </button><button id="airportButton" data-size="6" data-tool="airport" data-colour="violet" class="toolButton unselected" title="Airport">
@@ -81,6 +82,7 @@
   <option value="medieval">Medieval</option>
   <option value="wild-west">Wild west</option>
 </select> -->
+<!-- <div style="margin: 6px 0"></div> -->
 
           <div class="text-sm game-actions">
             <button id="newGameButton" class="toolButton unselected">
@@ -106,6 +108,7 @@
               -
             </button>
 
+<div style="margin: 6px 0"></div>
 
 <!-- <div style="margin: 2px 0"></div>
 <button id="budgetRequest" class="miscButton">Budget</button>
@@ -499,73 +502,7 @@
   </div>
 
   <script src="./vendor/jquery-3.6.1.min.js"></script>
-  <script src="./index.min.js?1670117369763"></script>
-<script>;(function () {
-  var serverAddress =
-    'ws://' +
-    (window.liveReloadHost || window.location.host || 'localhost').split(
-      ':'
-    )[0] +
-    ':35729'
-
-  console.log('Live-reload client connecting to', serverAddress)
-
-  var ws
-
-  function connectSocket() {
-    ws = new WebSocket(serverAddress)
-    ws.onmessage = function (e) {
-      var data = JSON.parse(e.data)
-      if (data.reload) location.reload()
-      else if (data.reloadCSS) refreshCSS()
-    }
-  }
-
-  function refreshCSS() {
-    var sheets = document.getElementsByTagName('link')
-
-    console.log('Reload CSS')
-
-    for (var i = 0; i < sheets.length; i++) {
-      var elem = sheets[i]
-      var rel = elem.rel
-      var reloadThis =
-        elem.href &&
-        elem.href.substring(0, 5) !== 'data:' &&
-        (typeof rel != 'string' ||
-          rel.length == 0 ||
-          rel.toLowerCase() == 'stylesheet')
-      if (!reloadThis) continue
-      var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '')
-      elem.href =
-        url +
-        (url.indexOf('?') >= 0 ? '&' : '?') +
-        '_cacheOverride=' +
-        new Date().valueOf()
-    }
-  }
-
-  var max = 3
-  var attempts = 0
-  var timer = setInterval(trySocket, 3000)
-
-  function trySocket() {
-    if (ws && ws.readyState === 1) {
-      console.log('Live-reload client connected')
-      clearInterval(timer)
-      return
-    }
-    if (attempts > 0) console.log('Live-reload client connecting..')
-    attempts++
-    if (attempts > max) {
-      console.log('Live-reload client failed to connect to server')
-      return clearInterval(timer)
-    }
-    connectSocket()
-  }
-
-  trySocket()
-})()
-</script></body>
+  <script src="./index.min.js?1671356360568"></script>
+</body>
 
 </html>

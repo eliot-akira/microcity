@@ -1,21 +1,22 @@
 # Notes
 
-
 ## Improve
 
 - Correctly redraw canvas on zoom in beyond 1
+- Prevent park tool from building over trees
 - More efficient DOM queries - For example, reduce repeated calls of `$('.selected')`, `$(this.canvasID)`
 - x Screenshot too big by zoomRatio
 
 ## Develop features
 
-- Generate new city
-- Export/import city
-- [x] Control panel with tool icons
-- Mouse and touch drag to move around the map 
-- Macintosh-style scroll bar for map
 - Overviews
+- Better navigation
+  - Macintosh-style scroll bar for map
+  - Mouse and touch drag to move around the map 
 - Sounds
+- [x] Generate new city
+- [x] Export/import city
+- [x] Control panel with tool icons
 
 ## Tools
 

@@ -1,4 +1,3 @@
-import { BaseTool } from '../tools/baseTool'
 import { BudgetWindow } from '../windows/budgetWindow'
 import { Config } from '../config'
 import { CongratsWindow } from '../windows/congratsWindow'
@@ -27,7 +26,15 @@ import { TileSet } from '../tiles/tileSet'
 import { TouchWarnWindow } from '../windows/touchWarnWindow'
 import * as Messages from '../messages'
 import { getChance } from '../utils'
+
+import { BaseTool } from '../tools/baseTool'
 import { BulldozerTool } from '../tools/bulldozerTool'
+import { ParkTool } from '../tools/parkTool'
+import { RailTool } from '../tools/railTool'
+import { RoadTool } from '../tools/roadTool'
+import { WireTool } from '../tools/wireTool'
+
+import * as gameAudio from './audio'
 
 let ticks = 0
 
@@ -141,8 +148,6 @@ function makeWindowOpenHandler(winName, customFn) {
 
     if (customFn) data = customFn()
 
-    console.log('Open', this._openWindow)
-
     this[win].open.apply(this[win], data)
   }
 }
@@ -193,10 +198,15 @@ class Game {
 
     this.rci = new RCI('RCIContainer', this.simulation)
 
+
     // Note: must init canvas before inputStatus
     this.gameCanvas = new GameCanvas('canvasContainer')
     this.gameCanvas.init(this.gameMap, this.tileSet, this.spriteSheet)
+
     this.inputStatus = new InputStatus(this.gameMap, tileSet.tileWidth)
+
+    this.gameAudio = gameAudio
+    gameAudio.init()
 
     this.dialogOpen = false
     this._openWindow = null
@@ -243,7 +253,6 @@ class Game {
     // genericDialogClosure = genericDialogClosure.bind(this)
 
     const genericDialogClosure = () => {
-      console.log('genericDialogClosure', this._openWindow)
       this.dialogOpen = false
       this._openWindow = null
     }
@@ -821,57 +830,25 @@ class Game {
         // $('#toolOutput').text(Text.toolMessages.noMoney)
         // this.makeSound('bop')
         break
-
       default:
-        if (!(tool instanceof QueryTool)) {
-          this.makeSound('rumble', .4)
+        if (tool instanceof QueryTool) {
+
+        } else if (tool instanceof BulldozerTool) {
+            this.gameAudio.makeSound('rumble', 0.4)
+        } else if ((tool instanceof RoadTool) || (tool instanceof RailTool)
+          || (tool instanceof WireTool) || (tool instanceof ParkTool)
+        ) {
+          this.gameAudio.makeSound('thumb_piano_dry_3_03_07', 0.4)
+        } else if (tool.result === tool.TOOLRESULT_FAILED) {
+        } else if (tool.result === tool.TOOLRESULT_OK) {
+          this.gameAudio.makeSound(
+            ['whaledrum_1_b_05', 'whaledrum_8_b_19'][
+              Math.floor(Math.random() * 2)
+            ]
+          )
         }
-      // $('#toolOutput').html('Tools')
-    }
-  }
 
-  /**
-   * Game sounds
-   */
-
-  audioContext = null
-  audioContextReady = false
-  sounds = {}
-  isPlayingSound = false
-
-  async resumeAudioContext() {
-    if (this.audioContextReady) return
-    if (!this.audioContext) this.audioContext = new AudioContext()
-    if (this.audioContext.state !== 'playing') {
-      await this.audioContext.resume()
-    }
-    this.audioContextReady = true
-  }
-
-  async makeSound(name, playbackRate = 1, duration = 300) {
-    if (this.isPlayingSound) return
-    try {
-      if (!this.audioContextReady) await this.resumeAudioContext()
-      let audioBuffer = this.sounds[name]
-      if (!audioBuffer) {
-        const response = await fetch(`sounds/${name}.wav`)
-        const arrayBuffer = await response.arrayBuffer()
-        audioBuffer = this.sounds[name] = await this.audioContext.decodeAudioData(arrayBuffer)  
-      }
-      const sourceNode = new AudioBufferSourceNode(this.audioContext, {
-        buffer: audioBuffer,
-        playbackRate
-      })
-      sourceNode.connect(this.audioContext.destination)
-      sourceNode.start(0)
-
-      this.isPlayingSound = true
-      setTimeout(() => {
-        this.isPlayingSound = false
-        sourceNode.stop()
-      }, duration + (300*Math.random())) 
-    } catch (e) {
-      // ok
+        // $('#toolOutput').html('Tools')
     }
   }
 

@@ -12,10 +12,11 @@ body {
 @font-face {
   font-family: 'pixels';
   src: url('./fonts/nfpixels-regular-webfont.woff2') format('woff2'),
-       url('./fonts/nfpixels-regular-webfont.woff') format('woff');
+    url('./fonts/nfpixels-regular-webfont.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
+
 .font-pixels {
   font-family: 'pixels';
   font-size: 16px;
@@ -31,77 +32,86 @@ body {
   // height: 100vh;
   // background-color: rgba(255, 255, 255, 0.8);
   background-color: rgba(0, 0, 0, .6);
+
   // background-color: #c7c7c7;
   // background-color: #343434;
-  &, button, input, select {
+  &,
+  button,
+  input,
+  select {
     // color: black;
     color: white;
   }
 
   hr {
     margin: 4px 0;
-padding: 0;
-border: 0;
-border-bottom: 1px solid rgba(255,255,255, .3);
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .3);
   }
 
-// Notifications
+  // Notifications
 
-.good {
-  background-color: LightGreen;
-  color: black;
-}
+  .good {
+    background-color: LightGreen;
+    color: black;
+  }
 
 
-.bad {
-  background-color: red;
-  color: yellow;
-}
+  .bad {
+    background-color: red;
+    color: yellow;
+  }
 
-.neutral {
-  background-color: #000;
-  color: white;
-}
+  .neutral {
+    background-color: #000;
+    color: white;
+  }
 
-// Tools
-.selected:not(.toolButton) {
-  font-weight: bold;
-  border: 1px solid black;
-}
-.toolButton {
-  display: inline-block;
-  background-color: transparent;
-  margin: 0;
-  padding: 0;
-  img {
-    width: 32px;
+  // Tools
+  .selected:not(.toolButton) {
+    font-weight: bold;
+    border: 1px solid black;
+  }
+
+  .toolButton {
+    display: inline-block;
+    background-color: transparent;
     margin: 0;
     padding: 0;
-    border: 2px solid transparent;
-    // Icon background: bababa, cbcbcb
-    border-top: 2px solid #333;
-    border-left: 2px solid #333;
-    border-right: 2px solid #888;
-    border-bottom: 2px solid #888;
+
+    img {
+      width: 32px;
+      margin: 0;
+      padding: 0;
+      border: 2px solid transparent;
+      // Icon background: bababa, cbcbcb
+      border-top: 2px solid #333;
+      border-left: 2px solid #333;
+      border-right: 2px solid #888;
+      border-bottom: 2px solid #888;
+    }
+
+    &.selected img {
+      border: 2px solid yellow;
+    }
   }
-  &.selected img {
-    border: 2px solid yellow;
+
+  .game-actions .toolButton {
+    padding: 0 .125rem;
   }
+
+  select {
+    background-color: transparent;
+    border: 1px solid #777;
+    border-radius: 4px;
+    font-size: 14px;
+    padding: 2px 6px;
+  }
+
 }
 
-.game-actions .toolButton {
-  padding: 0 .125rem;
-}
-
-select {
-  background-color: transparent;
-  border: 1px solid #777;
-  border-radius: 4px;
-  font-size: 14px;
-  padding: 2px 6px;
-}
-
-} // #info-bar
+// #info-bar
 
 
 button,
@@ -113,12 +123,15 @@ input[type='submit'] {
   border: none;
 }
 
-button, input, select {
+button,
+input,
+select {
   font-family: inherit;
   font-size: inherit;
 }
 
-.text-sm, #notifications {
+.text-sm,
+#notifications {
   font-size: 14px;
 }
 
@@ -335,6 +348,7 @@ nav li {
 .padding5 {
   padding: 5px;
 }
+
 .pointer {
   cursor: pointer;
 }
@@ -365,9 +379,9 @@ nav li {
   font-weight: 600px;
 }
 
-.shadow
-// .controlShadow
-{
+.shadow // .controlShadow
+
+  {
   -ms-box-shadow: 10px 0px 35px 0px rgba(31, 28, 31, 0.8);
   -webkit-box-shadow: 10px 0px 35px 0px rgba(31, 28, 31, 0.8);
   -moz-box-shadow: 10px 0px 35px 0px rgba(31, 28, 31, 0.8);
@@ -402,6 +416,7 @@ nav li {
 .width150 {
   width: 150px;
 }
+
 .width140 {
   width: 140px;
 }
@@ -410,13 +425,13 @@ nav li {
   z-index: 1;
 }
 
-#budgetForm > div:nth-child(9) {
+#budgetForm>div:nth-child(9) {
   align: center;
   width: 100%;
 }
 
-#budgetForm > div,
-#budgetForm > fieldset {
+#budgetForm>div,
+#budgetForm>fieldset {
   display: inline-block;
   width: 230px;
 }
@@ -711,6 +726,7 @@ nav li {
 #wireButton {
   // background-color: khaki;
 }
+
 /*
 @media (max-height: 742px) {
   footer {
@@ -929,6 +945,7 @@ nav li {
 .rightedge {
   right: 0px;
 }
+
 // }
 
 /* About/nag page styles */
